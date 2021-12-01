@@ -1,0 +1,114 @@
+---
+title: "Dplyr Homework"
+output: html_notebook
+---
+
+```{r}
+library(CodeClanData)
+  library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+view(drinks_content)
+```
+
+
+Question 1.
+
+# Load in the dataset and have a look at it. What are the dimensions, variable types, variable names, etc.
+```{r}
+str(drinks_content)
+```
+
+
+
+
+Question 2.
+
+# Let’s first investigate the calories of different drinks. Select the variables Beverage_category, Beverage, Beverage prep and Calories from your data. Since we are interested in the calorie content, check if there are any NA values in the data, and drop them if there are.
+```{r}
+drinks_content %>%
+  select(Beverage_category, Beverage, Beverage_prep, Calories) %>%
+  filter(!is.na(Calories)) %>%
+  summarise(count_of_missing_calories = n())
+```
+
+
+
+
+Question 3.
+
+# Create a new variable (column) called calorie_diff, which stores the difference between 135 calories (135 calories = 10 cubes of sugar!) and the calories in each drink. (hint: you’ll want to subtract 135 from the calories to see which drink have more or less than 10 cups of sugar).
+```{r}
+drinks_content %>%
+  mutate(calorie_diff = 135 - Calories) %>%
+  select(Beverage, Calories, calorie_diff)
+```
+
+
+
+
+Question 4.
+
+# Summarise the mean number of calories in each beverage_category. Which 3 category of drinks have the most calories? Which 3 drinks have the least? Write a small summary of your findings.
+```{r}
+# summaries mean of calories
+group_by(drinks_content,Beverage_category) %>%
+summarise_at(vars(Calories), list(Calories = mean)) %>%
+ arrange(desc(Calories, .by_group = TRUE))
+```
+```{r}
+# Top 3 Calories
+group_by(drinks_content,Beverage_category) %>%
+summarise_at(vars(Calories), list(Calories = mean)) %>%
+  top_n(3, Calories) %>%
+  arrange(desc(Calories, .by_group = TRUE))
+```
+```{r}
+#Least 3 calories
+group_by(drinks_content,Beverage_category) %>%
+summarise_at(vars(Calories), list(Calories = mean)) %>%
+  top_n(-3, Calories) %>%
+  arrange(desc(Calories, .by_group = TRUE))
+```
+
+
+Question 5.
+
+# Let’s look at this a different way. What is the average number of calories in each Beverage_prep type?
+```{r}
+group_by(drinks_content,Beverage_prep) %>%
+summarise_at(vars(Calories), list(Calories = mean)) %>%
+ arrange(desc(Calories, .by_group = TRUE))
+```
+```{r}
+average_bev_prep <- drink_calories %>%
+  group_by(Beverage_prep) %>%
+  summarise(mean_cals = mean(Calories)) %>%
+  arrange(desc(mean_cals))
+
+average_bev_prep
+```
+
+
+Question 6.
+
+# Which Beverage_prep type contains more than the average calories of all drinks?
+Hint
+```{r}
+    drinks_content %>%
+    dplyr::summarize(Mean = mean(Calories), na.rm=TRUE) %>%
+   select(Calories, Beverage_prep)
+
+```
+
+
+
+Question 7.
+
+# Which is the best type of coffee drink to get if you’re worried about consuming too many calories?
+```{r}
+
+```
+
