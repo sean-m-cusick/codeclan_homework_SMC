@@ -56,7 +56,7 @@ Question 4.
 # summaries mean of calories
 group_by(drinks_content,Beverage_category) %>%
 summarise_at(vars(Calories), list(Calories = mean)) %>%
- arrange(desc(Calories, .by_group = TRUE))
+ arrange(desc(Calories))
 ```
 ```{r}
 # Top 3 Calories
@@ -99,7 +99,7 @@ Hint
 ```{r}
     drinks_content %>%
     dplyr::summarize(Mean = mean(Calories), na.rm=TRUE) %>%
-   select(Calories, Beverage_prep)
+   select(, Beverage_prep)
 
 ```
 
