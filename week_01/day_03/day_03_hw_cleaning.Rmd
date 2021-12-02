@@ -3,3 +3,141 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+```{r}
+library(tidyverse)
+library(dplyr)
+library(janitor)
+library(CodeClanData)
+```
+
+```{r}
+movies <- read_csv("data/movies.csv")
+```
+
+```{r}
+view(movies)
+```
+
+```{r}
+summary(movies)
+```
+# Question 1
+
+After you’ve read in the data and assigned it to a variable with a useful name, investigate it. Write down some ideas for what you could do to further investigate/clean this data using what you’ve learned today (no need to code it though, just jot down thoughts and ideas). Feel free to also write down any general thoughts you get looking at the data - this task is just to get you thinking about data and data cleaning/prepping.
+
+#Thoughts
+- runtime has NAs
+- vote & vote count, greater significance of more votes
+- title & orig.title - check to see if differences
+- group by orig. language
+ - release dates - 1945:2015? - year in wrong order, can't arrange accurately
+ - tagline has NAs - can't average that
+ - revenue has NAs(0) - can average that - can calculate something from popularity?
+ - America is still the place - all Nas ( but has info)
+ 
+ #Question 2.
+
+A lot of interesting stuff in there! But for now, we are only interested in the movies’ titles, their runtime as well as their budget. Select the three columns that contain this information and save them into a new variable called movies_selected. Hint: you will have to make a choice between original_title and title.
+
+
+```{r}
+# compare title vs orign.
+movies %>%
+  dplyr::all_equal(original_title, title)
+```
+
+```{r}
+  movies_selected <- select(movies, title, runtime, budget)
+movies_selected
+
+```
+
+Question 3.
+
+#Ok, now take your subsetted data movies_selected, and count the number of missing values in each column.
+
+```{r}
+movies_selected %>%
+  filter(is.na(runtime))
+#no NA in title or Budget
+
+```
+
+Question 4.
+
+There’s not too many NAs, but there are actually quite a few movies with a runtime of 0 in this dataset. Since it’s impossible for a movie to have a runtime of 0, use the function na_if to convert runtimes of length 0 into NAs. Save this into a new variable called movies_runtime. Then count how many missing values there are now in the column runtime.
+
+```{r}
+movies_selected %>% 
+  mutate(movies_runtime = na_if(runtime, 0)) %>% 
+  filter(is.na(movies_runtime)) %>% 
+  count(movies_runtime)
+```
+
+
+Question 5.
+
+Impute the missing values in runtime with the median runtime using coalesce and save this into a new variable called movies_imputed. There should now be no missing values in the column runtime - check this to make sure.
+
+```{r}
+# Does not work
+movies_imputed <- movies_selected %>%
+  mutate(runtime = coalesce(
+    runtime,
+    mean(runtime, na.rm = TRUE))) %>% 
+  filter(runtime <= 80) %>% 
+  arrange(runtime)
+movies_imputed
+  
+```
+
+
+Question 6.
+
+Finally, use the slice_min and slice_max functions on movies_imputed to get the movies with the 10 shortest and 10 longest runtimes.
+
+```{r}
+
+```
+
+
+Question 7.
+
+Using the if_else function, impute anything with a budget below $100 with the median budget. Overwrite your movies_imputed so it contains the new budget values.
+
+
+```{r}
+
+```
+
+
+
+
+2 Extension
+
+
+Question 1.
+
+Using case_when, create a new column called budget_type and label budgets as follows:
+
+Budgets below 12 million as ‘Small budget’
+Budgets between 12 and 40 million as ‘Medium budget’
+Budgets 40 millions and above as ‘Big budget’
+Save this into a new variable called movie_budgets.
+
+Hint: 1e6 is a shorthand way of writing 1 million (1×106)
+
+
+```{r}
+
+```
+
+
+Question 2.
+
+Take the original dataset with all the variables. Using across and where, summarise the number of missing values, first across all columns of type character, and then across all columns of type numeric.
+
+```{r}
+
+```
+
