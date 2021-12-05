@@ -2,5 +2,213 @@
 title: "week_01_weekend_homework"
 output: html_notebook
 ---
+# Prepare RStudio
+# Load the data
+# Assess the data
+# Clean
+# Wrangle
+# Analyse
 
-T
+
+
+# Prepare RStudio
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(waldo)
+```
+
+# Load the data
+
+```{r}
+books <- read_csv("data/books.csv")
+view(books)
+```
+
+
+# Assess the data
+
+```{r}
+glimpse(books)
+dim(books)
+```
+RowID vs BookID - bookID arbitary? !=
+use waldo?
+
+how many 0 ratings? How many 5 (top) ratings?
+
+ISBN vs ISBN13 - 
+
+International Standard book Number - changed to 13 characters.
+All prior have 978 prefix. 
+
+some are book collections / the same book in different languages
+
+no ratings != no reviews
+
+dates - re order to year first
+
+
+Authors - NOT A BOOK ( remove)-
+
+Possible outputs
+
+1 - Authors - grouped by most books -  arranged by  avg rating / amount of reviews
+2 - group by country - top/bottom 5 performing publisher
+3 - top/bottom rated books by country
+4 - top 5 books by decade/century
+5 - shorter or longer books have higher rating?
+6 - older or newer book have higher rating 
+7 - avg rating of pre/post ISBN books
+8 - difference in ratings for same books
+9 - find books with reviews but 0 ratings
+
+
+
+
+
+# Clean the data
+
+No metadata to clean
+
+no no need to clean col names
+
+find NAs
+
+remove books with 0 pagecount
+
+group eng language books (en-us)
+
+```{r}
+summary(books)
+```
+
+```{r}
+books %>% 
+  count(is.na(title),
+        is.na(authors),
+        is.na(language_code),
+        is.na(authors),
+        is.na(num_pages),
+        )
+```
+ No NAs- but other missing data
+ 
+ 
+```{r}
+# some authors sperated by differnce in names / co-written books
+books %>% 
+  group_by(authors) %>%
+  count(authors) %>% 
+  arrange(desc(n))
+  
+```
+
+
+```{r}
+books_removed_nonbooks <- books %>% 
+  mutate(authors = na_if(authors, "NOT A BOOK")) %>% 
+  drop_na()
+  
+
+
+books_removed_nonbooks
+```
+
+
+```{r}
+books_subset <- books_removed_nonbooks %>%  # Remove non-books,books less than 24 pages, no ratings, group language code,
+  
+  filter(num_pages >= 24) %>% # KDP Print (Amazon) has a minimum of 24 (32 for picture books) to be published
+  
+ filter(ratings_count != 0) %>%  # remove no ratings
+  
+ mutate(language_code = recode 
+        (language_code,
+            "en-US" = "eng",
+            "en-GB" = "eng",
+            "en-CA" = "eng",)
+        ) # joins English language together
+ 
+  
+
+books_subset %>% 
+  # arrange(ratings_count) ## for checking amount of ratings
+arrange(desc(num_pages))
+
+nrow(books) - nrow(books_subset)  
+```
+
+```{r}
+# checking number of languages
+books_subset %>% 
+  group_by(language_code) %>%
+  count(language_code) %>% 
+  arrange(desc(n))
+
+# grouped all English language books together
+```
+Ungrouped results:- 
+
+ISO 639-2 Code // language
+
+#ale	1     - Aleut		
+#ara	1	  	- arabic
+#en-CA	7		- canadian
+#en-GB	209	- british
+#en-US	1370- american
+#eng	8619	- english
+#enm	3	    - middle english	
+#fre	139		- french
+#ger	94		- german
+#gla	1     - Gaidhlig
+#glg	1     -	galician	
+#grc	9     -	ancient greek	
+#ita	5     -	italian	
+#jpn	45    -	Japanese	
+#lat	3     -	latin	
+#msa	1	    -	malay
+#mul	19    -	multiple***	
+#nl	1	      -	dutch
+#nor	1	    -	norwegian
+#por	10    - portuguese
+#rus	2	    -	russian
+#spa	210   -	spanish	
+#swe	2	    -	swedish
+#tur	1     -	turkish	
+#wel	1     -	welsh	
+#zho	14    -	chinese
+
+
+```{r}
+ books_subset %>%
+  group_by(publisher) %>% 
+  count(publisher) %>% 
+  arrange(desc(n))
+```
+
+# Wrangle the data
+
+```{r}
+books_type <- books_subset %>%
+  mutate(
+    book_length = case_when(
+      num_pages <= 200 ~ "Short read",
+      num_pages <= 1000 ~ "Medium read",
+      num_pages <= 2000 ~ "Long read",
+      num_pages >= 3000 ~ "Extreme read"
+      )
+    )
+
+books_type %>% 
+  group_by(book_length) %>% 
+  select(num_pages, book_length) %>% 
+  count(book_length) %>%
+  
+  arrange(desc(n))
+```
+
+
+# Analyse
+
