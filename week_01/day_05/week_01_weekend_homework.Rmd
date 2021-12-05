@@ -129,13 +129,18 @@ books_subset <- books_removed_nonbooks %>%  # Remove non-books,books less than 2
             "en-US" = "eng",
             "en-GB" = "eng",
             "en-CA" = "eng",)
-        ) # joins English language together
- 
+        ) %>%  # joins English language together
+  
+ mutate(publication_date = 
+          (as.Date(publication_date,"%m/%d/%Y")) # fix the fate formatting
+        ) 
+# to find similar publishers, authors and titles and unify spelling
+  
   
 
 books_subset %>% 
   # arrange(ratings_count) ## for checking amount of ratings
-arrange(desc(num_pages))
+arrange((publication_date))
 
 nrow(books) - nrow(books_subset)  
 ```
@@ -183,10 +188,19 @@ ISO 639-2 Code // language
 
 ```{r}
  books_subset %>%
-  group_by(publisher) %>% 
-  count(publisher) %>% 
-  arrange(desc(n))
+  group_by(publisher) %>%
+  get_dupes(publisher)
+  #count(publisher) %>% 
+  #arrange(desc(n))
 ```
+
+```{r}
+books_subset %>% 
+  arrange((publication_date))
+  
+```
+
+
 
 # Wrangle the data
 
@@ -194,10 +208,10 @@ ISO 639-2 Code // language
 books_type <- books_subset %>%
   mutate(
     book_length = case_when(
-      num_pages <= 200 ~ "Short read",
-      num_pages <= 1000 ~ "Medium read",
-      num_pages <= 2000 ~ "Long read",
-      num_pages >= 3000 ~ "Extreme read"
+      num_pages < 200 ~ "Short read",
+      num_pages < 1000 ~ "Medium read",
+      num_pages < 2000 ~ "Long read",
+      num_pages >= 2000 ~ "Extreme read"
       )
     )
 
@@ -209,6 +223,28 @@ books_type %>%
   arrange(desc(n))
 ```
 
+```{r}
+books_subset %>% 
+  group_by(title) %>% 
+  get_dupes(title) %>% 
+  select(title, language_code)
+
+# most duplicates share languages. How many Translations?
+```
+
+```{r}
+books_subset %>% 
+  group_by(title) %>% 
+  get_dupes(title) %>% 
+  select(title, language_code, publisher, average_rating, ratings_count)
+
+# duplicate publishes && republished by different publishing houses. Aggregate them and aggregate their score?
+```
+
 
 # Analyse
+
+```{r}
+
+```
 
