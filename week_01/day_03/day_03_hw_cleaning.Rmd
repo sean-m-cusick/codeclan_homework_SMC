@@ -58,7 +58,9 @@ Question 3.
 
 ```{r}
 movies_selected %>%
-  filter(is.na(runtime))
+  summarise(runtime = sum(is.na(runtime)),
+            title = sum(is.na(title)),
+            budget = sum(is.na(budget)))
 #no NA in title or Budget
 
 ```
@@ -68,10 +70,11 @@ Question 4.
 There’s not too many NAs, but there are actually quite a few movies with a runtime of 0 in this dataset. Since it’s impossible for a movie to have a runtime of 0, use the function na_if to convert runtimes of length 0 into NAs. Save this into a new variable called movies_runtime. Then count how many missing values there are now in the column runtime.
 
 ```{r}
-movies_selected %>% 
-  mutate(movies_runtime = na_if(runtime, 0)) %>% 
-  filter(is.na(movies_runtime)) %>% 
-  count(movies_runtime)
+movies_runtime <- movies_selected %>% 
+  mutate(movies_runtime = na_if(runtime, 0)) 
+  
+  movies_runtime
+
 ```
 
 
@@ -80,14 +83,15 @@ Question 5.
 Impute the missing values in runtime with the median runtime using coalesce and save this into a new variable called movies_imputed. There should now be no missing values in the column runtime - check this to make sure.
 
 ```{r}
-# Does not work
-movies_imputed <- movies_selected %>%
+movies_imputed <- movies_runtime %>%
   mutate(runtime = coalesce(
     runtime,
     mean(runtime, na.rm = TRUE))) %>% 
   filter(runtime <= 80) %>% 
-  arrange(runtime)
-movies_imputed
+ arrange(runtime)
+
+movies_runtime #%>% 
+  #summarise(count = sum(is.na(runtime)))
   
 ```
 
