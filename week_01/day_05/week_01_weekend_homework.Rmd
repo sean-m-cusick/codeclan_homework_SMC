@@ -17,6 +17,7 @@ output: html_notebook
 library(tidyverse)
 library(janitor)
 library(waldo)
+library(lubridate)
 ```
 
 # Load the data
@@ -236,15 +237,56 @@ books_subset %>%
 books_subset %>% 
   group_by(title) %>% 
   get_dupes(title) %>% 
-  select(title, language_code, publisher, average_rating, ratings_count)
+  select(bookID, title, isbn, language_code, publisher, average_rating, ratings_count)
 
 # duplicate publishes && republished by different publishing houses. Aggregate them and aggregate their score?
+# can't sort by book ID / isbn / isbn13
+```
+
+```{r}
+list_titles <- books_subset %>% 
+  group_by(title) %>%
+  pull()
+```
+
+```{r}
+pub_year <- books_subset %>% 
+  mutate(year_pub = format
+         (as.Date
+           (publication_date, format = "%m/%d/%Y")
+           , "%Y")
+        ) %>%
+  mutate(year_pub = year(publication_date)) %>% 
+  
+ 
+  group_by(year_pub) %>%
+  select(year_pub, average_rating, ratings_count) %>% 
+  arrange(desc(year_pub))
+
+
+pub_year
 ```
 
 
 # Analyse
 
 ```{r}
+
+```
+
+```{r}
+top_publisher <- books_subset %>% 
+  group_by(publisher) %>% 
+  count(publisher) %>% 
+  arrange(desc(n)) %>%
+  head(10) 
+
+
+top_publisher
+```
+
+```{r}
+top_publisher
 
 ```
 
