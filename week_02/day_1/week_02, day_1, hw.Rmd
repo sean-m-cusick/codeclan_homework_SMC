@@ -1,0 +1,160 @@
+---
+title: "week_02, day_1, hw"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(tidyr)
+library(janitor)
+
+```
+
+Joins and tidyr Homework
+
+
+The data for the joining tasks is from Kaggle and contains synthetic (fake) credit card information and transactions. The data for the tidyr tasks is also synthetic.
+
+
+#########
+1 MVP
+1.1 Joins
+
+Question 1
+
+Read in all 4 credit card transaction datasets and clean column names.
+
+
+```{r}
+card_base <-read_csv("data/CardBase.csv")
+
+customer_base <- read_csv("data/CustomerBase.csv")
+
+fraud_base <- read_csv("data/FraudBase.csv")
+
+transaction_base <- read_csv("data/TransactionBase.csv")
+
+
+view(card_base)
+view(customer_base)
+view(fraud_base)
+view(transaction_base)
+
+```
+```{r}
+summary(card_base)
+summary(customer_base)
+summary(fraud_base)
+summary(transaction_base)
+```
+```{r}
+card_base <-janitor::clean_names(dat = card_base)
+
+customer_base <- janitor::clean_names(dat = customer_base)
+
+fraud_base <- janitor::clean_names(dat = fraud_base)
+
+transaction_base <- janitor::clean_names(dat = transaction_base)
+
+card_base
+customer_base
+fraud_base
+transaction_base
+```
+
+
+Question 2
+
+Join the data containing card details and customer details by customer id, so that all records of card details and any matching records in customer details are kept. Before you run the code, think about how many rows you expect to see after joining.
+
+```{r}
+left_join(card_base, customer_base, "cust_id")
+
+
+```
+
+
+Question 3
+
+Join the data containing fraud details with transaction details so all rows of both tables are kept. What does the resulting row number tell you?
+
+```{r}
+full_join(fraud_base, transaction_base)
+
+# that rows stayed 10,000 would imply that the rows on fraud are within the transaction
+```
+
+
+Question 4
+
+Join the data containing card details with transaction details so rows from the first which have matching ones in the second are returned, but only return rows in the first table once.
+
+```{r}
+rename(transaction_base, card_number = credit_card_id)
+bind_cols(card_base, transaction_base, by card_number)
+```
+
+
+
+#########
+1.2 tidyr
+Question 5
+
+Read in hat_observations and separate observation into two columns, hat_colour and hat_type.
+
+```{r}
+hats <- read_csv("data/hat_observations.csv")
+
+view(hats)
+```
+```{r}
+tidy_hats <- hats %>% 
+  separate(observation,
+           c("hat_colour", "hat_type")
+           , sep = "\\,"
+           )
+
+tidy_hats
+```
+
+
+
+Question 6
+
+Unite day, month, and year columns into a column called date using a suitable separator. Then find the date where the most berets were observed.
+
+```{r}
+tidyr_hats <- tidy_hats %>%
+  unite(date,
+        c(year, month, day),
+        sep = "."
+        )
+  tidyr_hats
+```
+
+
+
+
+
+##############################################
+2 Extension
+2.1 Joins
+Question 1
+
+Can you join all 4 datasets together so that you’re left with a dataset that looks like below with 109 rows and 12 columns?
+
+```{r}
+
+```
+
+
+2.2 tidyr
+Question 2
+
+Read in exam_scores and transform it into long format with two new columns exam_question and score. Then, using separate and select, remove superfluous information from the values in exam_question
+
+```{r}
+
+```
+

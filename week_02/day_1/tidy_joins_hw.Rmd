@@ -1,0 +1,69 @@
+---
+title: "Joins and `tidyr` Homework"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    css: ../../../styles.css
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+The data for the joining tasks is from [Kaggle](https://www.kaggle.com/ananta/credit-card-data) and contains synthetic (fake) credit card information and transactions. The data for the `tidyr` tasks is also synthetic.
+
+# MVP
+
+## Joins
+
+<br>
+**Question 1**
+
+Read in all 4 credit card transaction datasets and clean column names.
+
+**Question 2**
+
+Join the data containing card details and customer details by customer id, so that all records of card details and any matching records in customer details are kept. Before you run the code, think about how many rows you expect to see after joining.
+
+**Question 3**
+
+Join the data containing fraud details with transaction details so all rows of both tables are kept. What does the resulting row number tell you?
+
+**Question 4**
+
+Join the data containing card details with transaction details so rows from the first which have matching ones in the second are returned, but only return rows in the first table once.
+
+## `tidyr`
+
+**Question 5**
+
+Read in `hat_observations` and separate `observation` into two columns, `hat_colour` and `hat_type`.
+
+
+**Question 6**
+
+Unite `day`, `month`, and `year` columns into a column called `date` using a suitable separator. Then find the date where the most berets were observed.
+
+
+
+# Extension
+
+## Joins
+
+**Question 1**
+
+Can you join all 4 datasets together so that you're left with a dataset that looks like below with **109 rows** and **12 columns**?
+
+![](images/all_joined.png)
+
+## `tidyr`
+
+**Question 2**
+
+Read in `exam_scores` and transform it into long format with two new columns `exam_question` and `score`. Then, using `separate` and `select`, remove superfluous information from the values in `exam_question`
