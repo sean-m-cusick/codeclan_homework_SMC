@@ -105,7 +105,8 @@ pattern <- "(?i)#[a-z]+"
 
 codeclan_hashtags <- codeclan_tweets_status %>% 
   select(tweet_id, text) %>% 
-  str_extract_all(text, pattern)
+  mutate(text = tolower(text) %>% 
+  filter(text == "#")
 
   
 ```
