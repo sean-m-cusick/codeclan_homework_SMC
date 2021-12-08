@@ -91,8 +91,9 @@ Question 4
 Join the data containing card details with transaction details so rows from the first which have matching ones in the second are returned, but only return rows in the first table once.
 
 ```{r}
-rename(transaction_base, card_number = credit_card_id)
-bind_cols(card_base, transaction_base, by card_number)
+#rename(transaction_base, card_number = credit_card_id)
+#bind_cols(card_base, transaction_base, by card_number)
+semi_join(card_base, transaction_base, by = c("card_number" = "credit_card_id"))
 ```
 
 
@@ -130,7 +131,13 @@ tidyr_hats <- tidy_hats %>%
         c(year, month, day),
         sep = "."
         )
-  tidyr_hats
+
+  tidyr_hats %>% 
+    filter(hat_type == "beret") %>% 
+    group_by(date) %>% 
+    summarise(total = sum(observation_count)) %>% 
+    slice_max(total)
+
 ```
 
 
@@ -145,7 +152,10 @@ Question 1
 Can you join all 4 datasets together so that you’re left with a dataset that looks like below with 109 rows and 12 columns?
 
 ```{r}
-
+card_base %>% 
+  inner_join(customer_base, by = "cust_id") %>% 
+  inner_join(transaction_base, by = c("card_number" = "credit_card_id")) %>% 
+  inner_join(fraud_base, by = "transaction_id")
 ```
 
 
@@ -155,6 +165,13 @@ Question 2
 Read in exam_scores and transform it into long format with two new columns exam_question and score. Then, using separate and select, remove superfluous information from the values in exam_question
 
 ```{r}
+exam_scores <- read_csv("data/exam_scores.csv")
 
+exam_scores_long <- exam_scores %>% 
+  pivot_longer(exam_Q1:exam_Q10, names_to = "exam_question", values_to = "score") 
+
+exam_scores_long %>% 
+  separate(exam_question, sep = "Q", into = c("extra_column", "exam_question")) %>% 
+  select(-extra_column)
 ```
 
