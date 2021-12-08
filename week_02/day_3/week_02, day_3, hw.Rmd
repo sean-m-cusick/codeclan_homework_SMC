@@ -1,0 +1,273 @@
+---
+title: "week_02, day_3, hw"
+output: html_notebook
+---
+
+1 MVP
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+
+####################
+Question 1.
+Find the weather forecast for the next three days online. Create a list of lists in which each inner list should be labelled with the name of the day of the week. Each inner list should contain named elements telling you the temperature, chance of rain and wind speed.
+
+
+
+```{r}
+weather_forecast_kharkiv <- list(
+  thursday = list(
+    temperature = "6°C",
+    chance_of_rain = "76%",
+    wind_speed = "11km/h"),
+  friday = list(
+    temperature = "7°C",
+    chance_of_rain = "24%",
+    wind_speed = "18km/h"),
+  saturday = list(
+    temperature = "4°C",
+    chance_of_rain = "16%",
+    wind_speed = "21km/h")
+  )
+
+weather_forecast_kharkiv
+```
+
+####################
+Question 2.
+Using the list you’ve just made find:
+
+The chance of rain tomorrow
+The wind speed on the day after tomorrow
+The temperature tomorrow.
+
+```{r}
+chance_of_rain_tommorrow <- weather_forecast_kharkiv$friday$chance_of_rain
+  
+windspeed_aftermorrow <- # weather_forecast_kharkiv[3][3] -NA because chr?
+  weather_forecast_kharkiv$saturday$wind_speed
+  
+temperature_tomorrow<- weather_forecast_kharkiv$friday$temperature
+
+chance_of_rain_tommorrow
+windspeed_aftermorrow
+temperature_tomorrow
+  
+```
+
+
+####################
+Question 3.
+Find a 14 day forecast online and create a matrix of the forecasts for temperature, where each week is one row and columns correspond to days.
+
+You will want to give a name to the matrix you create.
+
+```{r}
+input_forecast <- function(temperature, chance_of_rain, wind_speed){
+  temperature <- paste0(temperature, sep = "°C")
+    chance_of_rain <- paste0(chance_of_rain, sep = "%")
+      wind_speed <- paste0(wind_speed, sep = "m/s")
+      
+list(temperature, chance_of_rain, wind_speed)
+}
+
+```
+
+```{r}
+test <- input_forecast(4,5,7)
+
+test
+```
+
+```{r}
+list_weather_forecast_kharkiv_14 <- list(
+  input_forecast(6, 6, 4),
+  input_forecast(6, 37, 3),
+  input_forecast(5, 15, 5),
+  input_forecast(5, 9, 6),
+  input_forecast(2, 3, 7),
+  input_forecast(1, 20, 6),
+  input_forecast(1, 23, 4),
+  input_forecast(1, 36, 3),
+  input_forecast(-1, 34, 1),
+  input_forecast(-1, 35, 2),
+  input_forecast(1, 43, 3),
+  input_forecast(1, 33, 3),
+  input_forecast(-2, 36, 3),
+  input_forecast(-3, 38, 3))
+
+
+list_weather_forecast_kharkiv_14
+```
+
+
+```{r}
+matrix_weather_forecast_kharkiv_14 <- matrix(
+  unlist(list_weather_forecast_kharkiv_14), nrow = 3, ncol = 14)
+
+matrix_weather_forecast_kharkiv_14
+```
+
+
+
+####################
+Question 4.
+From the matrix you just made select:
+
+The third day of the second week
+The whole second week
+The first, third and fifth days in both weeks.
+
+```{r}
+matrix_weather_forecast_kharkiv_14[1:3,10]
+
+matrix_weather_forecast_kharkiv_14[1:3,c(1,3,5,8,10,12)]
+
+```
+
+
+
+
+####################
+Question 5.
+Write a function that pre-appends “The answer is:” to any character input, while for numeric input, it either just returns the number for numbers less than 10, or divides the number by 10 for numbers greater than 10. For anything else return “Invalid input”.
+
+```{r}
+tells_the_answer <- function(x){
+  if(str_detect(x, "[(?i)a-z]")){
+  paste0("The answer is: ", x)
+  } else {
+    if(str_detect(x, "[0-9]+")){
+      if(x<10){
+        print(x)
+      } else {
+      if(x>10){
+        x/10
+        print(x)
+      }
+      }
+    } else {
+      paste("Invalid input") #doesn't work?
+    }
+  }
+  }
+
+```
+
+```{r}
+#testing the test
+tells_the_answer(4)
+tells_the_answer(60)
+tells_the_answer("k")
+tells_the_answer(!) # how to get this to work?
+```
+
+
+
+
+####################
+Question 6.
+Write a function which checks if two vectors have the same elements.
+
+If they have the same elements in the same order, return “Exactly the same”
+If they have the same elements but in a different order, return “The same”
+If they don’t have the same elements, return “Different”.
+Hints
+
+```{r}
+# First test function - without loop
+check_sync_of_vector <- function(x, y){
+  if (x %in% y){
+    sort(desc(x))
+    sort(desc(y))
+      if(x == y){
+        print("Exactly the same")
+        } else {
+        print("The same")
+        }
+  } else {
+    print("Different")
+  }
+}
+
+```
+
+
+```{r}
+#Test 1
+check_sync_of_vector(
+  c(1,2,3), c(1,2,3))
+
+check_sync_of_vector(
+  c(3,1,2), c(1,2,3))
+
+check_sync_of_vector(
+  c(1,2,3), c(4,1,3)) # needs loop
+
+check_sync_of_vector(
+  c(1,2,3), c(4,5,6))
+```
+
+
+```{r}
+# Second test function - with loop
+check_sync_of_vector2 <- function(x, y){for(i in x){
+    if (x %in% y){
+    sort(desc(x))
+    sort(desc(y))
+      if(x == y){
+        print("Exactly the same")
+        } else {
+        print("The same")
+        }
+  } else {
+    print("Different")
+  }
+}
+}
+
+```
+
+```{r}
+#Test 2
+check_sync_of_vector(
+  c(1,2,3), c(1,2,3))
+
+check_sync_of_vector(
+  c(3,1,2), c(1,2,3))
+
+check_sync_of_vector(
+  c(1,2,3), c(4,1,3)) # needs loop
+
+check_sync_of_vector(
+  c(1,2,3), c(4,5,6))
+```
+
+
+#####################################
+2 Extension
+
+####################
+Question 7.
+Write code that prints a multiplication table for numbers up to 12. i.e. there will be 12 rows and 12 columns, and each element should be the row number multiplied by the column number.
+
+From: https://adriann.github.io/programming_problems.html
+
+
+
+
+
+####################
+Question 8.
+Write a function that takes a vector, and creates a text art histogram, like the one below.
+
+You may want to use the function cat(). This is similar to print(), but prints directly, without vector markers. You can also include newlines "\n" when using cat().
+
+1 | ***
+2 | *
+3 | *******
+4 | ****
+5 | **

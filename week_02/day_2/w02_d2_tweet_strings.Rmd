@@ -21,6 +21,10 @@ Load the code_clan_tweets.csv data. Find the number of rows, columns, and list a
 glimpse(codeclan_tweets)
 view(codeclan_tweets)
 ```
+```{r}
+dim(codeclan_tweets)
+names(codeclan_tweets)
+```
 
 
 Question 2.
@@ -41,13 +45,13 @@ Summarise the mean number of retweets (retweet_count), split by the type of plat
 
 ```{r}
 codeclan_tweets %>% 
-  select(source, is_quote, favorite_count) %>%
+  select(source, is_quote, retweet_count) %>%
     filter(is_quote != "TRUE",) %>%
   group_by(source) %>%
   #summarise(total_favs2 =
   #            (sum(favorite_count)/425))
    summarise(mean_favs =
-              mean(favorite_count))
+              mean(retweet_count))
 ```
 
 
@@ -60,7 +64,7 @@ codeclan_tweets %>%
   select(text, media_type, is_quote, favorite_count) %>%
   mutate(media_type =
            coalesce(media_type, "text")) %>% 
-  filter(is_quote != "TRUE",) %>%
+  # filter(is_quote != "TRUE",) %>%
   group_by(media_type) %>%
   summarise(total_favs =
               sum(favorite_count)) 
@@ -101,21 +105,15 @@ Question 7.
 From your new joined data, create a new tibble codeclan_hashtags containing only the tweet_id and convert the hashtags into lowercase for analysis. Keep only those tweets with hashtags.
 
 ```{r}
-pattern <- "(?i)#[a-z]+"
-
 codeclan_hashtags <- codeclan_tweets_status %>% 
-  select(tweet_id, text) %>% 
-  mutate(text = tolower(text) %>% 
-  filter(text == "#")
+  select(tweet_id, hashtags) %>% 
+  mutate(low_hashtag = str_to_lower(hashtags)) %>%
+  select(-hashtags) %>% 
+  drop_na(low_hashtag)
 
-  
+  codeclan_hashtags
 ```
 
-
-```{r}
-codeclan_tweets_status %>% 
-  janitor::clean_names()
-```
 
 
 ############
@@ -125,6 +123,7 @@ codeclan_tweets_status %>%
 Question 8.
 Some tweets have more than one hashtag, denoted by the c( symbols at the start of the string. Use the str_sub() and str_detect() functions and your codeclan_hashtags tibble from above to find all the cases in which the hashtag string begins with charactersc(.
 Hint
+
 
 
 Question 9.
