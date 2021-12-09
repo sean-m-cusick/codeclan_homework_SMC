@@ -8,6 +8,7 @@ output: html_notebook
 ```{r}
 library(tidyverse)
 library(rvest)
+library(stringr)
 ```
 
 
@@ -66,12 +67,13 @@ Find a 14 day forecast online and create a matrix of the forecasts for temperatu
 You will want to give a name to the matrix you create.
 
 ```{r}
-input_forecast <- function(temperature, chance_of_rain, wind_speed){
-  temperature <- paste0(temperature, sep = "°C")
-    chance_of_rain <- paste0(chance_of_rain, sep = "%")
-      wind_speed <- paste0(wind_speed, sep = "m/s")
-      
-list(temperature, chance_of_rain, wind_speed)
+input_forecast <- function(
+  temperature, chance_of_rain, wind_speed){
+    temperature <- paste0(temperature, sep = "°C")
+      chance_of_rain <- paste0(chance_of_rain, sep = "%")
+        wind_speed <- paste0(wind_speed, sep = "m/s")
+        
+  list(temperature, chance_of_rain, wind_speed)
 }
 
 ```
@@ -271,3 +273,51 @@ You may want to use the function cat(). This is similar to print(), but prints d
 3 | *******
 4 | ****
 5 | **
+
+
+
+
+histrogram <- function(x)
+  if (detect numerical vector x){
+    for (each instance in vector){
+       function element convert 
+      print((instance) " | " (element convert) \n)
+    }
+  }
+  
+convert_element <- function(i)
+  
+
+```{r}
+convert_element_to_ast <- function(
+  element
+){
+  # converted_element <-
+  for (i in element){
+    cat("*")
+  }
+}
+
+```
+
+```{r}
+convert_element_to_ast(8)
+```
+
+
+```{r}
+numerical_pattern <- "[0-9]+"
+
+  create_histogram <- function(vector_x){
+  if (str_detect(vector_x, pattern = numerical_pattern)){
+    for (i in vector_x){
+      cat(i[], sep = " | ", (convert_element_to_ast(i)),"\n")
+      }
+  }
+}
+```
+
+```{r}
+create_histogram(c(1,4,6,8,4,5,4,4))
+```
+
