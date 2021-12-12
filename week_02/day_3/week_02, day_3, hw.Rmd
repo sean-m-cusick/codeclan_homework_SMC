@@ -108,7 +108,7 @@ list_weather_forecast_kharkiv_14
 
 ```{r}
 matrix_weather_forecast_kharkiv_14 <- matrix(
-  unlist(list_weather_forecast_kharkiv_14), nrow = 3, ncol = 14)
+  unlist(list_weather_forecast_kharkiv_14), nrow = 3, ncol = 14) #6, 7
 
 matrix_weather_forecast_kharkiv_14
 ```
@@ -151,10 +151,10 @@ tells_the_answer <- function(x){
         print(x)
       }
       }
-    } else {
-      paste("Invalid input") #doesn't work?
-    }
-  }
+    } 
+  } 
+      return("Invalid input") #doesn't work?
+    
   }
 
 ```
@@ -164,7 +164,7 @@ tells_the_answer <- function(x){
 tells_the_answer(4)
 tells_the_answer(60)
 tells_the_answer("k")
-tells_the_answer(!) # how to get this to work?
+tells_the_answer(/) # how to get this to work?
 ```
 
 
@@ -178,6 +178,37 @@ If they have the same elements in the same order, return “Exactly the same”
 If they have the same elements but in a different order, return “The same”
 If they don’t have the same elements, return “Different”.
 Hints
+
+#answer
+
+```{r}
+is_same_vector <- function(vector_1, vector_2){
+  if (all(vector_1 == vector_2)){
+    return("exactly the same")
+  }
+  
+  if (all(sort(vector_1) == sort(vector_2))) {
+    return("The same")
+  }
+  
+  return("different")
+}
+```
+
+```{r}
+is_same_vector(
+  c(1,2,3), c(1,2,3))
+
+is_same_vector(
+  c(3,1,2), c(1,2,3))
+
+is_same_vector(
+  c(1,2,3), c(4,1,3)) # needs loop
+
+is_same_vector(
+  c(1,2,3), c(4,5,6))
+```
+
 
 ```{r}
 # First test function - without loop
@@ -294,9 +325,11 @@ convert_element_to_ast <- function(
 ){
   # converted_element <-
   for (i in element){
+    while(i < element){
     cat("*")
   }
-}
+  }
+  
 
 ```
 
@@ -311,7 +344,7 @@ numerical_pattern <- "[0-9]+"
   create_histogram <- function(vector_x){
   if (str_detect(vector_x, pattern = numerical_pattern)){
     for (i in vector_x){
-      cat(i[], sep = " | ", (convert_element_to_ast(i)),"\n")
+      cat(i, sep = " | ", (convert_element_to_ast(i)),"\n")
       }
   }
 }
@@ -319,5 +352,25 @@ numerical_pattern <- "[0-9]+"
 
 ```{r}
 create_histogram(c(1,4,6,8,4,5,4,4))
+```
+
+#Answer:
+```{r}
+make_histogram <- function(x){
+  
+  distinct <- sort(unique(x))
+  
+  for (i in distinct){
+    
+    count <- sum(x == i)
+    
+    cat(i)
+    cat(" | ")
+    cat(rep("*", count))
+    cat("\n")
+    
+  }
+  
+}
 ```
 
