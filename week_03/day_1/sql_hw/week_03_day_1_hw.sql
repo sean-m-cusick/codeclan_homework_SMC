@@ -30,6 +30,7 @@ SELECT
   COUNT(id) 
 FROM employees 
 WHERE country = 'Portugal' OR country = 'Spain'
+-- WHERE country IN ('Portugal','Spain')
 
 /* Q5
  * Count the number of pay_details records lacking a local_account_no. */
