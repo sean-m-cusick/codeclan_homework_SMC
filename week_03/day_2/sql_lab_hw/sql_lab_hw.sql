@@ -51,7 +51,7 @@ SELECT
     e.*,
     pd.local_account_no,
     pd.local_sort_code,
-    t.name
+    t.name AS team_name
 FROM (employees AS e LEFT JOIN pay_details AS pd
 ON e.id = pd.id)
 LEFT JOIN teams AS t
@@ -122,6 +122,24 @@ ON t.id = e.team_id
 GROUP BY e.team_id, t.name, t.charge_cost
 WHERE total_day_charge > 5000; -- Not working / cast as int
 
+SELECT 
+    t.name,
+    COUNT(e.id) * CAST(t.charge_cost AS INT) AS total_day_charge
+FROM employees AS e
+INNER JOIN teams AS t
+ON e.team_id = t.id
+GROUP BY t.id 
+HAVING COUNT(e.id) * CAST(t.charge_cost AS INT) > 5000
+
+SELECT 
+  t.name,
+  COUNT(e.id) * CAST(t.charge_cost AS INT) AS total_day_charge
+FROM employees AS e
+INNER JOIN teams AS t
+ON e.team_id = t.id
+GROUP BY t.id
+HAVING COUNT(e.id) * CAST(t.charge_cost AS INT) > 5000
+
 
 /* -- EXTENSION -- */
 
@@ -138,7 +156,9 @@ WHERE in_committee > 1 (
 
 --INNER JOIN employees_committees AS ec ON e.id = ec.employee_id 
 
-
+SELECT 
+  COUNT(DISTINCT(employee_id)) AS num_employees_on_committees
+FROM employees_committees
 
 -- Q6 -- 
 -- How many of the employees do not serve on a committee?
@@ -149,3 +169,16 @@ FROM employees AS e
 WHERE e.id NOT IN (
     SELECT 
         ec.employee_id FROM employees_committees AS ec)
+        
+        
+SELECT 
+  COUNT(*) AS num_not_in_committees
+FROM employees e
+LEFT JOIN employees_committees ec
+ON e.id = ec.employee_id 
+WHERE ec.employee_id IS NULL
+
+SELECT 
+  (SELECT COUNT(id) FROM employees) -
+  (SELECT COUNT(DISTINCT(employee_id)) FROM employees_committees)
+    AS num_not_in_committees
