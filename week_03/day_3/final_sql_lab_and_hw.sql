@@ -116,6 +116,7 @@ SELECT
   first_name,
   last_name,
   fte_hours,
+  salary 
   (fte_hours * salary) AS effective_yearly_salar
 FROM employees
 WHERE (fte_hours * salary) > 30000
@@ -130,7 +131,7 @@ t.name AS team_name,
 e.*
 FROM employees AS e INNER JOIN teams AS t
 ON e.team_id = t.id
-WHERE t.name = 'Data Team 2'
+WHERE t.name = 'Data Team 2' -- WHERE t.name LIKE 'Data Team%'
 
 -- Q11 -- 
 -- Find the first name and last name of all employees who lack a local_tax_code.
@@ -216,6 +217,22 @@ WHERE country = 'Japan' AND fte_hours IN(
 ORDER BY salary 
 LIMIT 1;
 
+--ANSWER:
+SELECT
+  first_name,
+  last_name,
+  salary
+FROM employees
+WHERE country = 'Japan' AND fte_hours = (
+  SELECT fte_hours
+  FROM employees
+  GROUP BY fte_hours
+  ORDER BY COUNT(*) DESC NULLS LAST
+  LIMIT 1
+  )
+ORDER BY salary ASC NULLS LAST
+LIMIT 1
+
 -- Q14 -- 
 -- Obtain a table showing any departments in which there are two or more employees
 -- lacking a stored first name. Order the table in descendl order by department.
@@ -227,15 +244,34 @@ HAVING first_name IS NULL AND count(*) > 1
 GROUP BY department
 ORDERY BY department DESC ;
 
+
+--ANSWER:
+SELECT department, COUNT(id) AS num_employees_no_first
+FROM employees 
+WHERE first_name IS NULL
+GROUP BY department
+HAVING COUNT(id) >= 2
+ORDER BY COUNT(id) DESC NULLS LAST, department ASC NULLS LAST
+
 -- ing order of the number
 -- of employees lacking a first name, and then in alphabetica
+
+
 -- Q15 --  [Bit tougher]
 -- Return a table of those employee first_names shared by more than one employee,
 -- together with a count of the number of times each first_name occurs. 
 -- Omit employees without a stored first_name from the table. 
 -- Order the table descending by count, and then alphabetically by first_name.
 
-
+-- ANSWER:
+SELECT 
+  first_name, 
+  COUNT(id) AS name_count
+FROM employees
+WHERE first_name IS NOT NULL
+GROUP BY first_name 
+HAVING COUNT(id) > 1
+ORDER BY COUNT(id) DESC, first_name ASC
 
 -- Q16 --  [Tough]
 -- Find the proportion of employees in each department who are grade 1.
@@ -245,3 +281,18 @@ ORDERY BY department DESC ;
 -- employees in that department.
 -- You can write an expression in a SELECT statement, e.g. grade = 1.
 -- This would result in BOOLEAN values.
+
+
+SELECT 
+  department, 
+  SUM(CAST(grade = '1' AS INT)) / CAST(COUNT(id) AS REAL) AS prop_grade_1 
+FROM employees 
+GROUP BY department
+
+-- OR 
+
+SELECT
+  department, 
+  SUM((grade = '1')::INT) / COUNT(id)::REAL AS prop_grade_1 
+FROM employees 
+GROUP BY department
