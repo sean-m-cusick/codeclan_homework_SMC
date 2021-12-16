@@ -167,7 +167,7 @@ ON e.team_id = t.id;
 -- who works the least common full-time equivalent hours across the corporation.”
 -- Hints --
 -- You will need to use a subquery to calculate the mode
-SELECT
+/*SELECT
     first_name,
     last_name,
     MIN(salary) AS min_salary
@@ -185,21 +185,49 @@ WHERE
       FROM employees
       GROUP BY fte_hours
     ) AS temp
-  );
+  ); */ 
+/*SELECT
+        fte_hours,
+        how_many AS how_many
+    FROM (
+        SELECT
+        fte_hours,
+                COUNT(*) AS how_many,
+                RANK() OVER (ORDER BY COUNT(*) DESC) AS fte_hours_rank
+            FROM employees
+            GROUP BY fte_hours
+    ) 
+    WHERE fte_hours_rank = 1 */-- failed attempt
   
-
+SELECT
+    first_name,
+    last_name,
+    salary AS min_salary
+FROM employees
+WHERE country = 'Japan' AND fte_hours IN(
+    SELECT
+        fte_hours,
+        COUNT(*) AS how_many
+    FROM employees
+    GROUP BY fte_hours 
+    ORDER BY how_many DESC
+    FETCH FIRST 1 ROWS WITH TIES
+    )
+ORDER BY salary 
+LIMIT 1;
 
 -- Q14 -- 
 -- Obtain a table showing any departments in which there are two or more employees
 -- lacking a stored first name. Order the table in descendl order by department.
 SELECT 
   department, 
-  COUNT(id) AS employee_numbers 
+  COUNT(*) AS no_first 
 FROM employees
-WHERE start_date BETWEEN '2003-01-01' AND '2003-12-31'
-GROUP BY department;
+HAVING first_name IS NULL AND count(*) > 1
+GROUP BY department
+ORDERY BY department DESC ;
 
-ing order of the number
+-- ing order of the number
 -- of employees lacking a first name, and then in alphabetica
 -- Q15 --  [Bit tougher]
 -- Return a table of those employee first_names shared by more than one employee,
