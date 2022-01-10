@@ -1,0 +1,104 @@
+---
+title: "ggplot_homework"
+output: html_notebook
+---
+
+# Homework Info
+
+## Learning Objectives
+
+* Practice making plots with ggplot2
+* Create your own theme and use it with plots
+
+## Background
+
+QikBit is a start-up company producing low cost fitness trackers. Their flagship product, the KwikBit Unit1 (spot the mistake on the patent form) reproduces the functionality of the best-in-class commercial fitness trackers, but is cheap to make. They are currently preparing to pitch to a potential investor and require a selection of charts to include in their presentation and promotional materials.
+
+## Data
+
+The data for this assignment is provided in the CodeClanData package.
+
+* qb_revenue_breakdown
+* qb_monthly_sales  # pivot wide 
+* qb_competitors
+* qb_device_data
+
+Take a little time before you start to familiarise yourself with the data.
+
+
+# MVP
+
+## Part 1
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(CodeClanData)
+```
+
+```{r}
+revenue_breakdown <- clean_names(qb_revenue_breakdown)
+
+monthly_sales <- clean_names(qb_monthly_sales)
+
+competitors <- clean_names(qb_competitors)
+
+device_data <- clean_names(qb_device_data)
+```
+
+### Question 1.
+Take the data in the dataset qb_revenue_breakdown and make a stacked bar chart showing the sources of revenue across the two years in the dataset.
+
+```{r}
+ggplot(revenue_breakdown) +
+  geom_col(aes(x = year, y = revenue, fill = product), position = "dodge")
+
+```
+
+
+### Question 2.
+Make a line chart showing monthly sales of the “flagship product” - the ‘KwikBit Unit 1’ - over the last year. This data is inside qb_monthly_sales, but you will need to use filter() or subset() (base R).
+```{r}
+ggplot(monthly_sales) +
+  geom_line(
+    aes(x = date, y = amount),
+    data = subset(monthly_sales, cashflow ==  "Kwikbit Unit 1 Sales"))
+```
+
+
+### Question 3.
+Make a line chart showing monthly revenue and costs over the last year. This data is also in qb_monthly_sales.
+
+
+### Question 4.
+Show annual sales of personal fitness trackers over the last 5 years broken down by company as a ribbon plot (use geom_area). This data is in qb_competitors.
+
+### Question 5.
+Now show the sales from the four competitors as a line graph. Include an extra layer that shows the data points used to make the lines.
+
+### Question 6.
+Now the company wants to compare the number of steps that their device counts vs. their competitors. Make a line graph of the number of steps throughout time, and use faceting to compare between companies and people. The data for this is in qb_device_data.
+
+
+
+## Part 2
+
+Take the plots that you produced in part one and now polish them by:
+
+Adding appropriate labels
+Changing the scales and coordinates when appropriate.
+Applying a unified theme, which is described below:
+Graphs should have white backgrounds, and use colour sparingly.
+There should be faint grid lines.
+Font sizes should be ~12pt although titles should be slightly larger and axis labels can be slightly smaller.
+All plots should use colours from the following company colour scheme.
+
+```{r}
+col_scheme <- c("#E89FE9", "#50434F", "#B6A7B5", "#F9A472", "#BD7040")
+```
+
+
+
+# Extension
+
+Try out different ways of plotting these three datasets. Which graphs do you think are particularly effective at showing QikBit’s success?
