@@ -34,6 +34,7 @@ Take a little time before you start to familiarise yourself with the data.
 library(tidyverse)
 library(janitor)
 library(CodeClanData)
+library(lubridate)
 ```
 
 ```{r}
@@ -68,16 +69,54 @@ ggplot(monthly_sales) +
 
 ### Question 3.
 Make a line chart showing monthly revenue and costs over the last year. This data is also in qb_monthly_sales.
+```{r}
+ggplot(monthly_sales) +
+  aes(x = date, y = amount, colour = cashflow) +
+  geom_line(
+    data = subset(monthly_sales, cashflow ==  "Total Revenue")) +
+  geom_line(
+    data = subset(monthly_sales, cashflow ==  "Cost"))
+```
+
 
 
 ### Question 4.
 Show annual sales of personal fitness trackers over the last 5 years broken down by company as a ribbon plot (use geom_area). This data is in qb_competitors.
+```{r}
+competitors %>% 
+  mutate(revenue_thousands = revenue/1000) %>% 
+
+ggplot() +
+  geom_area(
+    aes(x = year, y = revenue_thousands, group = company, fill = company)) +
+  ylab ("revenue (1000s)")
+```
+
+
 
 ### Question 5.
 Now show the sales from the four competitors as a line graph. Include an extra layer that shows the data points used to make the lines.
+```{r}
+ggplot(competitors) + 
+  aes(x = year, y = revenue, colour = company) +
+  geom_line(aes(group = company), alpha = 1) +
+  geom_point(alpha = 0.5) 
+```
+
+
 
 ### Question 6.
 Now the company wants to compare the number of steps that their device counts vs. their competitors. Make a line graph of the number of steps throughout time, and use faceting to compare between companies and people. The data for this is in qb_device_data.
+
+```{r}
+device_data %>% 
+  mutate(time_text = str_c(hours, mins), time_date = hm(time_text)) %>%  
+
+ggplot(device_data) + 
+  aes(x = time_date, y = count, group = id, colour = device) +
+  geom_line()
+```
+
 
 
 
