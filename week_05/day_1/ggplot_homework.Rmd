@@ -35,6 +35,7 @@ library(tidyverse)
 library(janitor)
 library(CodeClanData)
 library(lubridate)
+li
 ```
 
 ```{r}
@@ -110,7 +111,7 @@ Now the company wants to compare the number of steps that their device counts vs
 
 ```{r - creates NAs - needs fixed}
 device_data_update <- device_data %>% 
-  mutate(time_text = str_c(hours, mins), time_date = hm(time_text))
+  mutate(time_text = str_c(hours, mins), time_date = lubridate::hm(time_text))
 ```
 ```{r}
 ggplot(device_data_update) + 
@@ -126,13 +127,13 @@ ggplot(device_data_update) +
 
 Take the plots that you produced in part one and now polish them by:
 
-Adding appropriate labels
-Changing the scales and coordinates when appropriate.
-Applying a unified theme, which is described below:
-Graphs should have white backgrounds, and use colour sparingly.
-There should be faint grid lines.
-Font sizes should be ~12pt although titles should be slightly larger and axis labels can be slightly smaller.
-All plots should use colours from the following company colour scheme.
+*1 Adding appropriate labels
+*2 Changing the scales and coordinate when appropriate.
+*3 Applying a unified theme, which is described below:
+  * Graphs should have white backgrounds, and use colour sparingly.
+  * There should be faint grid lines.
+  * Font sizes should be ~12pt although titles should be slightly larger and axis labels can be slightly smaller.
+  * All plots should use colours from the following company colour scheme.
 
 ```{r}
 col_scheme <- c("#E89FE9", "#50434F", "#B6A7B5", "#F9A472", "#BD7040")
