@@ -1,0 +1,115 @@
+---
+title: "Shiny Advance Homework"
+output: html_notebook
+---
+
+# *Shiny - Advanced UI Homework*
+# MVP
+## Make an app of your choice
+We have uploaded a lot of data to the data folder within the server. Have a go at reading some data in, and making a simple app from it that picks out a key insight. It can be any layout you prefer, and can be as detailed design wise as you want. The main point is to find something interesting.
+
+
+```{r}
+library(tidyverse)
+library(shiny)
+library(shinythemes)
+library(CodeClanData)
+library(giscoR)
+library(sf)
+library(leaflet)
+library(leaflet.extras)
+library(htmltools) 
+```
+
+```{r}
+# school_census_data <- school_census #Not very interesting
+whisky_data <- whisky # potential - show map
+```
+
+# Data to show:
+
+* Map - where each distillery is in Scotland
+
+* Distillery/Whiskys per Region
+
+* Whiskys per Distillery
+
+* Histogram - number of distilleries over time (with plots for number of whiskies - colour coded)
+
+* flavours?
+
+
+# Scotland Map example:
+* https://stackoverflow.com/questions/67694691/drawing-map-with-ggplot-and-draw-dots-in-map
+
+```{r}
+# Scotland as a spatial object
+scotland <- giscoR::gisco_get_nuts(nuts_id = 'UKM',
+                                   resolution = '01') 
+```
+
+```{r}
+whisky_distileries_coords <- whisky_data %>% 
+  st_as_sf(coords = c("Latitude", "Longitude"), crs = 4326)
+```
+
+```{r }
+mapview::mapView(whisky_distileries_coords)
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = scotland, fill = NA, color = "gray45") + # borders of Scotland
+  geom_sf(data = whisky_distileries_coords, pch = 4, color = "red") + # the distilleries
+  theme_void() +
+  labs(title = "Whisky of Scotland") +
+  theme(plot.title = element_text(hjust = 1/2))
+```
+
+```{r}
+# transfor data to spacial
+whisky_data_spatial <- whisky_data %>%
+  sf::st_as_sf(coords = c("Latitude", "Longitude"), crs = 4326)
+
+# unnecessary?
+# whisky_data_scotland <- sf::st_transform(whisky_data_scotland, crs = 4326)
+
+# Create colour pallette for region
+region_palette <- leaflet::colorFactor(
+  palette = c(
+    "Campbeltown" = "#CD3700",
+    "Highlands" = "#BBFFFF",
+    "Islay" = "#7CCD7C",
+    "Lowlands" = "#FFDAB9",
+    "Speyside" = "#912CEE"),
+  domain = whisky_data_spatial$Region)
+
+# and then plot them
+whisky_map <- leaflet(whisky_data_spatial) %>% 
+  addProviderTiles("Stamen.Toner") %>% 
+  # addPolygons(data = scotland,
+  #             fill = NA,
+  #             color = "grey") %>% 
+  
+  addCircleMarkers(radius = 10,
+                   fillOpacity = 0.7,
+                   stroke = FALSE,
+                   color = region_palette(
+                    whisky_data_spatial$Region),
+  )
+                   # clusterOptions =
+                   #   markerClusterOptions())
+                   #    %>%
+  
+    # leaflet::addLegend(position = "bottomright",
+    #         values = ~whisky_data_spatial,
+    #         opacity = 0.7, 
+    #         pal = region_palette,
+    #         title = "Distillery") %>%
+  
+  # leaflet.extras::addResetMapButton()
+
+whisky_map
+
+```
+

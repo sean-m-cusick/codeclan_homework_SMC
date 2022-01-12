@@ -1,49 +1,142 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
+# Set up --------------------------
+library(tidyverse)
 library(shiny)
+library(shinythemes)
+library(CodeClanData)
+library(giscoR)
+library(sf)
 
-# Define UI for application that draws a histogram
+# Data Creation --------------------------
+whisky_data <- whisky
+whisky_data_spatial <- whisky_data %>% 
+    st_as_sf(coords = c("Latitude", "Longitude"), crs = 4326)
+scotland <- giscoR::gisco_get_nuts(nuts_id = 'UKM',
+                                   resolution = '01')
+region_palette <- leaflet::colorFactor(
+    palette = c(
+        "Campbeltown" = "#CD3700",
+        "Highlands" = "#BBFFFF",
+        "Islay" = "#7CCD7C",
+        "Lowlands" = "#FFDAB9",
+        "Speyside" = "#912CEE"),
+    domain = whisky_data_spatial$Region)
+
+
+# User Interface --------------------------
 ui <- fluidPage(
-
+    theme = shinytheme("darkly"),
+    
+    
+    
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
+    titlePanel(tags$h2("Whisky of Scotland")),
+    
+    # Sidebar with two radio buttons 
     sidebarLayout(
+        
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+            
+            checkboxGroupInput("region_input",
+                               "Region",
+                               choices = c(whisky_data_spatial$Region)
+                               ),
+            
+            radioButtons("season_input",
+                         tags$b("Which Season?"),
+                         choices = c("Summer", "Winter")
+                         ),
+            
+            radioButtons("medal_input",
+                         tags$b("Which type of medal?"),
+                         choices = c("Bronze", "Silver", "Gold")
+                        )
         ),
-
-        # Show a plot of the generated distribution
+        
+        
         mainPanel(
-           plotOutput("distPlot")
+            tabsetPanel(
+                tabPanel("Map",
+                         plotOutput("map_plot")
+                         ),
+                tabPanel("Distilaries",
+                         plotOutput("distilary_plot")
+                ),
+                tabPanel("Histogram",
+                         plotOutput("histogram_plot")
+                ), 
+                tabPanel("Whisky Notes",
+                         plotOutput("flavour_plot")
+                ),
+                tabPanel("About",
+                         tags$a("Author: Seàn M. Cusick",
+                                href = "http://riomhach.co.uk//")
+                ),
+                
+            )
         )
     )
 )
 
-# Define server logic required to draw a histogram
+
+
+
+
+# Server --------------------------
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    output$map_plot_gg <- renderPlot({
+        
+        ggplot() +
+            geom_sf(data = scotland, fill = NA, color = "gray45") + # borders of Scotland
+            geom_sf(data = whisky_data_spatial, pch = 4, color = "red") + # the distilleries
+            theme_void() +
+            labs(title = "Whisky of Scotland") +
+            theme(plot.title = element_text(hjust = 1/2))
+                
+            
     })
+    
+    output$map_plot_leaflet <- renderPlot({
+        
+        leaflet(whisky_data_spatial) %>% 
+            addProviderTiles("Stamen.Toner") %>% 
+            addCircleMarkers(radius = 10,
+                             fillOpacity = 0.7,
+                             stroke = FALSE,
+                             color = region_palette(
+                                 whisky_data_spatial$Region),
+            )
+        
+        
+    })
+    
+    output$medal_plot <- renderPlot({
+        
+        olympics_overall_medals %>%
+            filter(team %in% c("United States",
+                               "Soviet Union",
+                               "Germany",
+                               "Italy",
+                               "Great Britain")) %>%
+            filter(medal == input$medal_input) %>%
+            filter(season == input$season_input) %>%
+            ggplot() +
+            aes(x = team, y = count, fill = medal, colour = "#000000") +
+            geom_col( show.legend = FALSE) +
+            theme_minimal() +
+            labs(title = "Number of medals") +
+            labs(x = "\nTeam",
+                 y = "Count") + 
+            scale_fill_manual(
+                values = c(
+                    "Bronze" = "#CD6839", #sienna3
+                    "Silver" = "#E0EEEE", #azure2,
+                    "Gold" = "#FFD700" #gold
+                )
+            )
+    })
+    
 }
 
-# Run the application 
+
+# Run App --------------------------
 shinyApp(ui = ui, server = server)
