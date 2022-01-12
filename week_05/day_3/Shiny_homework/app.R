@@ -5,6 +5,7 @@ library(shinythemes)
 library(CodeClanData)
 library(giscoR)
 library(sf)
+library(leaflet)
 
 # Data Creation --------------------------
 whisky_data <- whisky
@@ -12,6 +13,10 @@ whisky_data_spatial <- whisky_data %>%
     st_as_sf(coords = c("Latitude", "Longitude"), crs = 4326)
 scotland <- giscoR::gisco_get_nuts(nuts_id = 'UKM',
                                    resolution = '01')
+
+all_regions <- unique(whisky_data_spatial$Region)
+all_distilleries <- unique(whisky_data_spatial$Distillery)
+
 region_palette <- leaflet::colorFactor(
     palette = c(
         "Campbeltown" = "#CD3700",
@@ -27,29 +32,35 @@ ui <- fluidPage(
     theme = shinytheme("darkly"),
     
     
-    
     # Application title
     titlePanel(tags$h2("Whisky of Scotland")),
     
-    # Sidebar with two radio buttons 
+    # Sidebar with alt. map, region, distillery, timescale
     sidebarLayout(
         
-        sidebarPanel(
+        sidebarPanel(position = "left",
+            
+            checkboxInput("map_type",
+                          "Alternative map",
+                          value = FALSE),
+            
             
             checkboxGroupInput("region_input",
                                "Region",
-                               choices = c(whisky_data_spatial$Region)
+                               choices = all_regions
                                ),
             
-            radioButtons("season_input",
-                         tags$b("Which Season?"),
-                         choices = c("Summer", "Winter")
+            selectInput("distillery_input",
+                         tags$b("Which Distillery?"),
+                         choices = all_distilleries
                          ),
             
-            radioButtons("medal_input",
-                         tags$b("Which type of medal?"),
-                         choices = c("Bronze", "Silver", "Gold")
-                        )
+            sliderInput("time_input",
+                        "Year",
+                        min = 1775,
+                        max = 1993,
+                        value = c(1780, 1990))
+
         ),
         
         
