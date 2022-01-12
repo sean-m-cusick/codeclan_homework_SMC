@@ -35,7 +35,6 @@ library(tidyverse)
 library(janitor)
 library(CodeClanData)
 library(lubridate)
-li
 ```
 
 ```{r}
@@ -51,9 +50,9 @@ device_data <- clean_names(qb_device_data)
 ### Question 1.
 Take the data in the dataset qb_revenue_breakdown and make a stacked bar chart showing the sources of revenue across the two years in the dataset.
 
-```{r}
+```{r - not stacked}
 ggplot(revenue_breakdown) +
-  geom_col(aes(x = year, y = revenue, fill = product), position = "dodge")
+  geom_col(aes(x = year, y = revenue, fill = product)) # position = "dodge")
 
 ```
 
@@ -64,7 +63,8 @@ Make a line chart showing monthly sales of the “flagship product” - the ‘K
 ggplot(monthly_sales) +
   geom_line(
     aes(x = date, y = amount),
-    data = subset(monthly_sales, cashflow ==  "Kwikbit Unit 1 Sales"))
+    data = subset(monthly_sales,
+                  cashflow ==  "Kwikbit Unit 1 Sales"))
 ```
 
 
@@ -111,8 +111,15 @@ Now the company wants to compare the number of steps that their device counts vs
 
 ```{r - creates NAs - needs fixed}
 device_data_update <- device_data %>% 
-  mutate(time_text = str_c(hours, mins), time_date = lubridate::hm(time_text))
+  mutate(time_text = str_c(hours, ":", mins), time_date = hm(time_text))
 ```
+
+```{r}
+device_data_update <- device_data %>% 
+  mutate(device_data, decimal_hour = hours + (mins/60))
+```
+
+
 ```{r}
 ggplot(device_data_update) + 
   aes(x = time_date, y = counts, group = id, colour = device) +
@@ -140,6 +147,40 @@ col_scheme <- c("#E89FE9", "#50434F", "#B6A7B5", "#F9A472", "#BD7040")
 ```
 
 
+```{r - Lucy Company Scheme}
+unified_theme <- function() {
+  font <- "Georgia"   #assign font family up front
+  
+  theme_light() %+replace%    #replace elements we want to change
+    
+  theme(
+    # add border
+    panel.border = element_rect(colour = "#50434F", fill = NA, linetype = 2),
+    
+    # colour background
+    panel.background = element_rect(fill = "white"),
+    
+    # modify grid
+    panel.grid.major.x = element_line(colour = "#B6A7B5", 
+                                      linetype = 3, size = 0.5),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y =  element_line(colour = "#B6A7B5", 
+                                       linetype = 3, size = 0.5),
+    panel.grid.minor.y = element_blank(),
+    
+    # modify text, axis and colour
+    axis.text = element_text(colour = "#50434F", size = rel(0.9)),
+    axis.title = element_text(colour = "#50434F"),
+    axis.ticks = element_line(colour = "#50434F"),
+ 
+    # modify titles and subtitles
+    plot.title = element_text(colour = "#50434F", 
+                              family = "Arial", size = rel(1.5)),
+    plot.subtitle = element_text(colour = "#50434F", 
+                                 family = "Arial", size = rel(1.2))
+  )
+}
+```
 
 # Extension
 
