@@ -93,7 +93,7 @@ whisky_map <- leaflet(whisky_data_spatial) %>%
   
   addCircleMarkers(radius = 10,
                    fillOpacity = 0.7,
-                   stroke = FALSE,
+                   stroke = TRUE,
                    color = region_palette(
                     whisky_data_spatial$Region),
   )

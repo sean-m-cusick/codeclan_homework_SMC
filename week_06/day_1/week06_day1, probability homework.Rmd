@@ -1,0 +1,5 @@
+---
+title: "week06_day1, probability homework"
+output: html_notebook
+---
+
