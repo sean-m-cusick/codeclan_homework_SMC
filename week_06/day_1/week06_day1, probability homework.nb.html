@@ -216,8 +216,288 @@ pre code {
 
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShwcm9iKVxuYGBgIn0= -->
+<pre class="r"><code>library(prob)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBjb21iaW5hdFxuXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYY29tYmluYXTigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20g4oCYcGFja2FnZTp1dGlsc+KAmTpcblxuICAgIGNvbWJuXG5cbkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogZkFzaWFuT3B0aW9uc1xuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiB0aW1lRGF0ZVxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiB0aW1lU2VyaWVzXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IGZCYXNpY3NcbkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogZk9wdGlvbnNcblxuQXR0YWNoaW5nIHBhY2thZ2U6IOKAmHByb2LigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmJhc2XigJk6XG5cbiAgICBpbnRlcnNlY3QsIHNldGRpZmYsIHVuaW9uXG4ifQ== -->
+<pre><code>Loading required package: combinat
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIndlZWswNl9kYXkxLCBwcm9iYWJpbGl0eSBob21ld29yayINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCg==</div>
+Attaching package: ‘combinat’
+
+The following object is masked from ‘package:utils’:
+
+    combn
+
+Loading required package: fAsianOptions
+Loading required package: timeDate
+Loading required package: timeSeries
+Loading required package: fBasics
+Loading required package: fOptions
+
+Attaching package: ‘prob’
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, union</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShndG9vbHMpXG5saWJyYXJ5KHRpZHl2ZXJzZSlcbmBgYCJ9 -->
+<pre class="r"><code>library(gtools)
+library(tidyverse)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUmVnaXN0ZXJlZCBTMyBtZXRob2RzIG92ZXJ3cml0dGVuIGJ5ICdkYnBseXInOlxuICBtZXRob2QgICAgICAgICBmcm9tXG4gIHByaW50LnRibF9sYXp5ICAgICBcbiAgcHJpbnQudGJsX3NxbCAgICAgIFxuLS0gQXR0YWNoaW5nIHBhY2thZ2VzIC0tLS0tLS0tLS0tLS0tLS0tXG52IGdncGxvdDIgMy4zLjUgICAgIHYgcHVycnIgICAwLjMuNFxudiB0aWJibGUgIDMuMS41ICAgICB2IGRwbHlyICAgMS4wLjdcbnYgdGlkeXIgICAxLjEuNCAgICAgdiBzdHJpbmdyIDEuNC4wXG52IHJlYWRyICAgMi4xLjAgICAgIHYgZm9yY2F0cyAwLjUuMVxuLS0gQ29uZmxpY3RzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG54IGRwbHlyOjpmaWx0ZXIoKSBtYXNrcyB0aW1lU2VyaWVzOjpmaWx0ZXIoKSwgc3RhdHM6OmZpbHRlcigpXG54IGRwbHlyOjpsYWcoKSAgICBtYXNrcyB0aW1lU2VyaWVzOjpsYWcoKSwgc3RhdHM6OmxhZygpXG4ifQ== -->
+<pre><code>Registered S3 methods overwritten by &#39;dbplyr&#39;:
+  method         from
+  print.tbl_lazy     
+  print.tbl_sql      
+-- Attaching packages -----------------
+v ggplot2 3.3.5     v purrr   0.3.4
+v tibble  3.1.5     v dplyr   1.0.7
+v tidyr   1.1.4     v stringr 1.4.0
+v readr   2.1.0     v forcats 0.5.1
+-- Conflicts --------------------------
+x dplyr::filter() masks timeSeries::filter(), stats::filter()
+x dplyr::lag()    masks timeSeries::lag(), stats::lag()</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShqYW5pdG9yKVxuYGBgIn0= -->
+<pre class="r"><code>library(janitor)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYamFuaXRvcuKAmVxuXG5UaGUgZm9sbG93aW5nIG9iamVjdHMgYXJlIG1hc2tlZCBmcm9tIOKAmHBhY2thZ2U6c3RhdHPigJk6XG5cbiAgICBjaGlzcS50ZXN0LCBmaXNoZXIudGVzdFxuIn0= -->
+<pre><code>
+Attaching package: ‘janitor’
+
+The following objects are masked from ‘package:stats’:
+
+    chisq.test, fisher.test</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="mvp" class="section level1">
+<h1>MVP</h1>
+<div id="the-titanic" class="section level2">
+<h2>The Titanic</h2>
+<p>A data set detailing the survival or death of passengers and crew members on the RMS Titanic is given in the data folder for this homework - use this data and not the built-in Titanic dataset in R.</p>
+<p>Some time after the disaster a journalist wrote that crew members were more likely to have survived the sinking than passengers. This was disputed by a descendant of one of the surviving crew members, who suggested that the opposite was true, i.e. passengers were more likely to have survived than crew.</p>
+<div id="question" class="section level3">
+<h3>Question</h3>
+<p>Calculate the conditional probabilities prob(survived∣crew) and prob(survived∣passenger) to settle this dispute.</p>
+<p>Have a look at the distinct values of the class variable, this will tell you whether each individual was a passenger (1st, 2nd or 3rd class) or a member of the crew (treat restaurant staff as crew)</p>
+</div>
+<div id="hints" class="section level3">
+<h3>Hints</h3>
+<ul>
+<li>You may want to create a crew column containing values TRUE or FALSE to help with this</li>
+<li>For prob(survived∣crew) think ‘what proportion of the crew survived?’, and similar for prob(survived∣passenger)</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGl0YW5pY19kYXRhIDwtIHJlYWQuY3N2KFwiZGF0YS90aXRhbmljLmNzdlwiKVxuXG50aXRhbmljX2RhdGEgPC0gdGl0YW5pY19kYXRhICU+JVxuICBtdXRhdGUoXG4gICAgY3JldyA9IGNhc2Vfd2hlbihcbiAgICAgIHN0cl9kZXRlY3QoY2xhc3MsIFwiY3Jld1wiKSB+IFRSVUUsXG4gICAgICBzdHJfZGV0ZWN0KGNsYXNzLCBcInN0YWZmXCIpIH4gVFJVRSxcbiAgICAgIFRSVUUgfiBGQUxTRSksXG4gICAgLmFmdGVyID0gYWdlKSAlPiUgXG4gIG11dGF0ZShcbiAgICBzdXJ2aXZlZCA9IGNhc2Vfd2hlbihcbiAgICAgIHN0cl9kZXRlY3Qoc3Vydml2ZWQsIFwieWVzXCIpIH4gVFJVRSxcbiAgICAgIHN0cl9kZXRlY3Qoc3Vydml2ZWQsIFwibm9cIikgfiBGQUxTRSxcbiAgICAgIFRSVUUgfiBGQUxTRSlcbiAgKVxuXG4gIFxuXG4jIHByb2Jfc3Vydml2ZWRfY3JldyA8LSB0aXRhbmljX2RhdGEgJT4lIFxuIyAgIGZpbHRlclxuIyBcbiMgXG4jIHByb2Jfc3Vydml2ZWRfcGFzc2VuZ2VyXG5gYGAifQ== -->
+<pre class="r"><code>titanic_data &lt;- read.csv(&quot;data/titanic.csv&quot;)
+
+titanic_data &lt;- titanic_data %&gt;%
+  mutate(
+    crew = case_when(
+      str_detect(class, &quot;crew&quot;) ~ TRUE,
+      str_detect(class, &quot;staff&quot;) ~ TRUE,
+      TRUE ~ FALSE),
+    .after = age) %&gt;% 
+  mutate(
+    survived = case_when(
+      str_detect(survived, &quot;yes&quot;) ~ TRUE,
+      str_detect(survived, &quot;no&quot;) ~ FALSE,
+      TRUE ~ FALSE)
+  )
+
+  
+
+# prob_survived_crew &lt;- titanic_data %&gt;% 
+#   filter
+# 
+# 
+# prob_survived_passenger</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGl0YW5pY190YWJsZSA8LSB0aXRhbmljX2RhdGEgJT4lIFxuICB0YWJ5bChjcmV3LCBzdXJ2aXZlZClcblxudGl0YW5pY190YWJsZVxuYGBgIn0= -->
+<pre class="r"><code>titanic_table &lt;- titanic_data %&gt;% 
+  tabyl(crew, survived)
+
+titanic_table</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICBjcmV3IEZBTFNFIFRSVUVcbiBGQUxTRSAgIDgxNyAgNTAwXG4gIFRSVUUgICA2NzkgIDIxMVxuIn0= -->
+<pre><code>  crew FALSE TRUE
+ FALSE   817  500
+  TRUE   679  211</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGl0YW5pY190YWJsZSA8LSB0aXRhbmljX3RhYmxlICU+JSBcbiAgYWRvcm5fdG90YWxzKHdoZXJlID0gYyhcInJvd1wiLCBcImNvbFwiKSlcblxuXG50aXRhbmljX3RhYmxlXG5gYGAifQ== -->
+<pre class="r"><code>titanic_table &lt;- titanic_table %&gt;% 
+  adorn_totals(where = c(&quot;row&quot;, &quot;col&quot;))
+
+
+titanic_table</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICBjcmV3IEZBTFNFIFRSVUUgVG90YWxcbiBGQUxTRSAgIDgxNyAgNTAwICAxMzE3XG4gIFRSVUUgICA2NzkgIDIxMSAgIDg5MFxuIFRvdGFsICAxNDk2ICA3MTEgIDIyMDdcbiJ9 -->
+<pre><code>  crew FALSE TRUE Total
+ FALSE   817  500  1317
+  TRUE   679  211   890
+ Total  1496  711  2207</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvYl9zdXJ2aXZlZF9jcmV3IDwtIHRpdGFuaWNfZGF0YSAlPiUgXG4gIGZpbHRlcihzdXJ2aXZlZCA9PSBUUlVFLCBjcmV3ID09IFRSVUUpICU+JSBzdW1tYXJpc2UocHJvYiA9IG4oKSAvIG5yb3codGl0YW5pY19kYXRhKSlcblxucHJvYl9zdXJ2aXZlZF9jcmV3XG5gYGAifQ== -->
+<pre class="r"><code>prob_survived_crew &lt;- titanic_data %&gt;% 
+  filter(survived == TRUE, crew == TRUE) %&gt;% summarise(prob = n() / nrow(titanic_data))
+
+prob_survived_crew</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6MSwibmNvbCI6MSwic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbMSB4IDFdIl19fSwicmRmIjoiSDRzSUFBQUFBQUFBQmwxUHl3NkNNQkJjQ21na0VVMzhEa2g4WGozb0J4aFBYTXRESldKTFNvMzZGZjZPLytVZDNaSTIwWjUyZHpJek83UGZKdk1nQ1FEQUJjOGg0UHE0UW0rem04NldNd0NQNE9XQUJ3TTE3OGlhZEFCQXFPYjY5WGkreVdKdUVYMUdMMFdEeS9nSDlHckJVNHM0RVB3V0cvSlFPenUyVzFiUnhuWUxjaXBwZkJDb3hhdTFKSDFleTVJekZCR1YxN2ZFanJDQTBaV3BGSG1VbmE3c0hLM1VBNTBHL3BQWktjbEhXL25hcWxld1k4a0trNzJpYVZIcEk4UzJYZG00RmlXVHBnbWlUU3k1cElZWFpMd3lTTmNOMmkvbkZyZkJwd0VBQUE9PSJ9 -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["prob"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.09560489"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkFcbmBgYCJ9 -->
+<pre class="r"><code>NA</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvYl9zdXJ2aXZlZF9wYXNzZW5nZXIgPC0gdGl0YW5pY19kYXRhICU+JSBcbiAgZmlsdGVyKHN1cnZpdmVkID09IFRSVUUsIGNyZXcgPT0gRkFMU0UpICU+JSBzdW1tYXJpc2UocHJvYiA9IG4oKSAvIG5yb3codGl0YW5pY19kYXRhKSlcblxucHJvYl9zdXJ2aXZlZF9wYXNzZW5nZXJcbmBgYCJ9 -->
+<pre class="r"><code>prob_survived_passenger &lt;- titanic_data %&gt;% 
+  filter(survived == TRUE, crew == FALSE) %&gt;% summarise(prob = n() / nrow(titanic_data))
+
+prob_survived_passenger</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6MSwibmNvbCI6MSwic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbMSB4IDFdIl19fSwicmRmIjoiSDRzSUFBQUFBQUFBQmwxUFN3ckNNQlI4YlZPbEFUL2dPU3hZRVpjdTlBRGl5bzJMV0tzV2ExTFNGTjI1OXlDZXhwTjRDUFdsSktCWnZmZUdtWGt6cThWNlROY1VBQUlnbmc5QmlDdTA1c3RSTWtrQWlJK1hCd1FpUGEvSUdqUUFRRmZQMmZQemVOMXZHNGNZY25iT0tsejZQeUFwcGRnNnhFaUtTMnpKSGVQc3VXNXB3U3JYamU2WVl2RmVvaGF2dHlOcGkxTGxncVBJMTNsRFIreEpCK2pWWEtmWURkTmp6VS9EcVg1ZzBzQi9NamVsL3pGV29iRnFaZnlRODh4bUw5ZzJLOHpSeGJaTjJiaVVPVmUyQ2FKVnJJUmlsa2RUVVZpazZRYnZMMUJadzNhbkFRQUEifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["prob"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.2265519"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="probability-consolidation-questions" class="section level2">
+<h2>Probability Consolidation Questions</h2>
+<div id="question-1." class="section level3">
+<h3>Question 1.</h3>
+<p>If I roll a six-sided dice once, what is the probability of getting a number less than 5?</p>
+<p>A: 0.6666667</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub25lX2RpZSA8LSByb2xsZGllKDEpXG5cbmxlc3NfdGhhbl9maXZlIDwtIG9uZV9kaWUgJT4lIFxuICBkcGx5cjo6ZmlsdGVyKFgxIDwgNSlcblxucHJvYl9sZXNzX3RoYW5fZml2ZSA8LSBucm93KGxlc3NfdGhhbl9maXZlKSAvIG5yb3cob25lX2RpZSlcbnByb2JfbGVzc190aGFuX2ZpdmVcbmBgYCJ9 -->
+<pre class="r"><code>one_die &lt;- rolldie(1)
+
+less_than_five &lt;- one_die %&gt;% 
+  dplyr::filter(X1 &lt; 5)
+
+prob_less_than_five &lt;- nrow(less_than_five) / nrow(one_die)
+prob_less_than_five</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNjY2NjY2N1xuIn0= -->
+<pre><code>[1] 0.6666667</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="question-2." class="section level3">
+<h3>Question 2.</h3>
+<p>How many outcomes are there in the sample space of an experiment in which we toss three dice?</p>
+<p>A: 216</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGhyZWVfZGljZSA8LSByb2xsZGllKDMpXG5cbm5yb3codGhyZWVfZGljZSlcbmBgYCJ9 -->
+<pre class="r"><code>three_dice &lt;- rolldie(3)
+
+nrow(three_dice)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIxNlxuIn0= -->
+<pre><code>[1] 216</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="question-3." class="section level3">
+<h3>Question 3.</h3>
+<p>In an experiment where we roll four dice:</p>
+<ul>
+<li><p>how many outcomes are in the event where the total of the four dice equals 5, 6 or 7)? A: 9</p></li>
+<li><p>what is the probability of this event? A: 0.006944444</p></li>
+<li><p>what assumptions do we apply in answering part ii? A: the same set of dice are used and rolled in the same manner</p></li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm91cl9kaWNlIDwtIHJvbGxkaWUoNClcblxudG90YWxfNV90b183IDwtIGZvdXJfZGljZSAlPiUgXG4gIGRwbHlyOjpmaWx0ZXIoWDEgKyBYMiArIFgzICsgWDQgPT0gNTo3KVxuXG5ucm93KHRvdGFsXzVfdG9fNylcbmBgYCJ9 -->
+<pre class="r"><code>four_dice &lt;- rolldie(4)
+
+total_5_to_7 &lt;- four_dice %&gt;% 
+  dplyr::filter(X1 + X2 + X3 + X4 == 5:7)
+
+nrow(total_5_to_7)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDlcbiJ9 -->
+<pre><code>[1] 9</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvYl90b3RhbF81X3RvXzcgPC0gbnJvdyh0b3RhbF81X3RvXzcpIC8gbnJvdyhmb3VyX2RpY2UpXG5wcm9iX3RvdGFsXzVfdG9fN1xuYGBgIn0= -->
+<pre class="r"><code>prob_total_5_to_7 &lt;- nrow(total_5_to_7) / nrow(four_dice)
+prob_total_5_to_7</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDA2OTQ0NDQ0XG4ifQ== -->
+<pre><code>[1] 0.006944444</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="hint" class="section level4">
+<h4>Hint</h4>
+<p>For part i, rowSums(.) may help you setup up the necessary random variable total (or you can use pivot_longer())</p>
+</div>
+</div>
+<div id="question-4." class="section level3">
+<h3>Question 4.</h3>
+<p>Five chairs are placed in a row in a room, along with five people of differing height. The people sit down randomly on the chairs. What is the probability that they sit in order of decreasing height, left to right?</p>
+<div id="hint-1" class="section level4">
+<h4>Hint</h4>
+<p>This is an arrangement where order matters. Of all the possible arrangements, how many are correct?</p>
+</div>
+</div>
+<div id="question-5." class="section level3">
+<h3>Question 5.</h3>
+<p>I roll six dice:</p>
+<ul>
+<li>what is the probability I see the numbers 6, 5, 4, 3, 2 and 1 in order on the dice, left to right?</li>
+<li>what is the probability I see one each of the numbers 6, 5, 4, 3, 2 and 1 on the dice regardless of order?</li>
+</ul>
+<div id="hint-2" class="section level4">
+<h4>Hint</h4>
+<p>Have a look at the isin() function in the prob package. For example, to filter all rows containing 6, 1, 2 in that order, you could use isin(., c(6, 1, 2), ordered = TRUE)</p>
+</div>
+</div>
+<div id="question-6." class="section level3">
+<h3>Question 6.</h3>
+<p>If I draw a single card from a 52-card deck, and it is black, what is the probability that its suit is spades?</p>
+<div id="hint-3" class="section level4">
+<h4>Hint</h4>
+<ul>
+<li>Investigate the cards() function in the prob package, if you’d like to try this in R (make a deck without jokers).</li>
+<li>You could think about adding your own black_card random variable to the sample space, which would be TRUE if the suit is ‘Spade’ or ‘Club’, and FALSE otherwise.)</li>
+</ul>
+<!-- rnb-text-end -->
+</div>
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIndlZWswNl9kYXkxLCBwcm9iYWJpbGl0eSBob21ld29yayINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCmBgYHtyfQ0KbGlicmFyeShwcm9iKQ0KbGlicmFyeShndG9vbHMpDQpsaWJyYXJ5KHRpZHl2ZXJzZSkNCmxpYnJhcnkoamFuaXRvcikNCmBgYA0KDQoNCiMgTVZQDQoNCiMjIFRoZSBUaXRhbmljIA0KDQpBIGRhdGEgc2V0IGRldGFpbGluZyB0aGUgc3Vydml2YWwgb3IgZGVhdGggb2YgcGFzc2VuZ2VycyBhbmQgY3JldyBtZW1iZXJzIG9uIHRoZSBSTVMgVGl0YW5pYyBpcyBnaXZlbiBpbiB0aGUgZGF0YSBmb2xkZXIgZm9yIHRoaXMgaG9tZXdvcmsgLSB1c2UgdGhpcyBkYXRhIGFuZCBub3QgdGhlIGJ1aWx0LWluIFRpdGFuaWMgZGF0YXNldCBpbiBSLg0KDQpTb21lIHRpbWUgYWZ0ZXIgdGhlIGRpc2FzdGVyIGEgam91cm5hbGlzdCB3cm90ZSB0aGF0IGNyZXcgbWVtYmVycyB3ZXJlIG1vcmUgbGlrZWx5IHRvIGhhdmUgc3Vydml2ZWQgdGhlIHNpbmtpbmcgdGhhbiBwYXNzZW5nZXJzLiBUaGlzIHdhcyBkaXNwdXRlZCBieSBhIGRlc2NlbmRhbnQgb2Ygb25lIG9mIHRoZSBzdXJ2aXZpbmcgY3JldyBtZW1iZXJzLCB3aG8gc3VnZ2VzdGVkIHRoYXQgdGhlIG9wcG9zaXRlIHdhcyB0cnVlLCBpLmUuIHBhc3NlbmdlcnMgd2VyZSBtb3JlIGxpa2VseSB0byBoYXZlIHN1cnZpdmVkIHRoYW4gY3Jldy4NCg0KIyMjIFF1ZXN0aW9uDQoNCkNhbGN1bGF0ZSB0aGUgY29uZGl0aW9uYWwgcHJvYmFiaWxpdGllcyBwcm9iKHN1cnZpdmVk4oijY3JldykgYW5kIHByb2Ioc3Vydml2ZWTiiKNwYXNzZW5nZXIpIHRvIHNldHRsZSB0aGlzIGRpc3B1dGUuDQoNCkhhdmUgYSBsb29rIGF0IHRoZSBkaXN0aW5jdCB2YWx1ZXMgb2YgdGhlIGNsYXNzIHZhcmlhYmxlLCB0aGlzIHdpbGwgdGVsbCB5b3Ugd2hldGhlciBlYWNoIGluZGl2aWR1YWwgd2FzIGEgcGFzc2VuZ2VyICgxc3QsIDJuZCBvciAzcmQgY2xhc3MpIG9yIGEgbWVtYmVyIG9mIHRoZSBjcmV3ICh0cmVhdCByZXN0YXVyYW50IHN0YWZmIGFzIGNyZXcpDQoNCiMjIyBIaW50cw0KKiBZb3UgbWF5IHdhbnQgdG8gY3JlYXRlIGEgY3JldyBjb2x1bW4gY29udGFpbmluZyB2YWx1ZXMgVFJVRSBvciBGQUxTRSB0byBoZWxwIHdpdGggdGhpcw0KKiBGb3IgcHJvYihzdXJ2aXZlZOKIo2NyZXcpIHRoaW5rIOKAmHdoYXQgcHJvcG9ydGlvbiBvZiB0aGUgY3JldyBzdXJ2aXZlZD/igJksIGFuZCBzaW1pbGFyIGZvciBwcm9iKHN1cnZpdmVk4oijcGFzc2VuZ2VyKQ0KDQpgYGB7cn0NCnRpdGFuaWNfZGF0YSA8LSByZWFkLmNzdigiZGF0YS90aXRhbmljLmNzdiIpDQoNCnRpdGFuaWNfZGF0YSA8LSB0aXRhbmljX2RhdGEgJT4lDQogIG11dGF0ZSgNCiAgICBjcmV3ID0gY2FzZV93aGVuKA0KICAgICAgc3RyX2RldGVjdChjbGFzcywgImNyZXciKSB+IFRSVUUsDQogICAgICBzdHJfZGV0ZWN0KGNsYXNzLCAic3RhZmYiKSB+IFRSVUUsDQogICAgICBUUlVFIH4gRkFMU0UpLA0KICAgIC5hZnRlciA9IGFnZSkgJT4lIA0KICBtdXRhdGUoDQogICAgc3Vydml2ZWQgPSBjYXNlX3doZW4oDQogICAgICBzdHJfZGV0ZWN0KHN1cnZpdmVkLCAieWVzIikgfiBUUlVFLA0KICAgICAgc3RyX2RldGVjdChzdXJ2aXZlZCwgIm5vIikgfiBGQUxTRSwNCiAgICAgIFRSVUUgfiBGQUxTRSkNCiAgKQ0KDQogIA0KDQojIHByb2Jfc3Vydml2ZWRfY3JldyA8LSB0aXRhbmljX2RhdGEgJT4lIA0KIyAgIGZpbHRlcg0KIyANCiMgDQojIHByb2Jfc3Vydml2ZWRfcGFzc2VuZ2VyDQpgYGANCg0KYGBge3J9DQp0aXRhbmljX3RhYmxlIDwtIHRpdGFuaWNfZGF0YSAlPiUgDQogIHRhYnlsKGNyZXcsIHN1cnZpdmVkKQ0KDQp0aXRhbmljX3RhYmxlDQpgYGANCmBgYHtyfQ0KdGl0YW5pY190YWJsZSA8LSB0aXRhbmljX3RhYmxlICU+JSANCiAgYWRvcm5fdG90YWxzKHdoZXJlID0gYygicm93IiwgImNvbCIpKQ0KDQoNCnRpdGFuaWNfdGFibGUNCmBgYA0KDQpgYGB7cn0NCnByb2Jfc3Vydml2ZWRfY3JldyA8LSB0aXRhbmljX2RhdGEgJT4lIA0KICBmaWx0ZXIoc3Vydml2ZWQgPT0gVFJVRSwgY3JldyA9PSBUUlVFKSAlPiUgc3VtbWFyaXNlKHByb2IgPSBuKCkgLyBucm93KHRpdGFuaWNfZGF0YSkpDQoNCnByb2Jfc3Vydml2ZWRfY3Jldw0KYGBgDQoNCmBgYHtyfQ0KcHJvYl9zdXJ2aXZlZF9wYXNzZW5nZXIgPC0gdGl0YW5pY19kYXRhICU+JSANCiAgZmlsdGVyKHN1cnZpdmVkID09IFRSVUUsIGNyZXcgPT0gRkFMU0UpICU+JSBzdW1tYXJpc2UocHJvYiA9IG4oKSAvIG5yb3codGl0YW5pY19kYXRhKSkNCg0KcHJvYl9zdXJ2aXZlZF9wYXNzZW5nZXINCmBgYA0KDQoNCiMjIFByb2JhYmlsaXR5IENvbnNvbGlkYXRpb24gUXVlc3Rpb25zDQoNCiMjIyBRdWVzdGlvbiAxLg0KSWYgSSByb2xsIGEgc2l4LXNpZGVkIGRpY2Ugb25jZSwgd2hhdCBpcyB0aGUgcHJvYmFiaWxpdHkgb2YgZ2V0dGluZyBhIG51bWJlciBsZXNzIHRoYW4gNT8NCg0KQTogMC42NjY2NjY3DQoNCmBgYHtyfQ0Kb25lX2RpZSA8LSByb2xsZGllKDEpDQoNCmxlc3NfdGhhbl9maXZlIDwtIG9uZV9kaWUgJT4lIA0KICBkcGx5cjo6ZmlsdGVyKFgxIDwgNSkNCg0KcHJvYl9sZXNzX3RoYW5fZml2ZSA8LSBucm93KGxlc3NfdGhhbl9maXZlKSAvIG5yb3cob25lX2RpZSkNCnByb2JfbGVzc190aGFuX2ZpdmUNCmBgYA0KDQojIyMgUXVlc3Rpb24gMi4NCkhvdyBtYW55IG91dGNvbWVzIGFyZSB0aGVyZSBpbiB0aGUgc2FtcGxlIHNwYWNlIG9mIGFuIGV4cGVyaW1lbnQgaW4gd2hpY2ggd2UgdG9zcyB0aHJlZSBkaWNlPw0KDQpBOiAyMTYNCmBgYHtyfQ0KdGhyZWVfZGljZSA8LSByb2xsZGllKDMpDQoNCm5yb3codGhyZWVfZGljZSkNCmBgYA0KDQoNCiMjIyBRdWVzdGlvbiAzLg0KSW4gYW4gZXhwZXJpbWVudCB3aGVyZSB3ZSByb2xsIGZvdXIgZGljZToNCg0KKiBob3cgbWFueSBvdXRjb21lcyBhcmUgaW4gdGhlIGV2ZW50IHdoZXJlIHRoZSB0b3RhbCBvZiB0aGUgZm91ciBkaWNlIGVxdWFscyA1LCA2IG9yIDcpPw0KQTogOQ0KDQoqIHdoYXQgaXMgdGhlIHByb2JhYmlsaXR5IG9mIHRoaXMgZXZlbnQ/DQpBOiAwLjAwNjk0NDQ0NA0KDQoqIHdoYXQgYXNzdW1wdGlvbnMgZG8gd2UgYXBwbHkgaW4gYW5zd2VyaW5nIHBhcnQgaWk/DQpBOiB0aGUgc2FtZSBzZXQgb2YgZGljZSBhcmUgdXNlZCBhbmQgcm9sbGVkIGluIHRoZSBzYW1lIG1hbm5lcg0KDQpgYGB7cn0NCmZvdXJfZGljZSA8LSByb2xsZGllKDQpICU+JSANCiAgbXV0YXRlKHJvdyA9IHJvd19udW1iZXIoKSwNCiAgICAgICAgIC5iZWZvcmUgPSBYMSkNCg0KdG90YWxfNV90b183IDwtIGZvdXJfZGljZSAlPiUgDQogIGRwbHlyOjpmaWx0ZXIoWDEgKyBYMiArIFgzICsgWDQgPT0gNTo3KQ0KDQpucm93KHRvdGFsXzVfdG9fNykNCg0KcHJvYl90b3RhbF81X3RvXzcgPC0gbnJvdyh0b3RhbF81X3RvXzcpIC8gbnJvdyhmb3VyX2RpY2UpDQpwcm9iX3RvdGFsXzVfdG9fNw0KYGBgDQoNCg0KIyMjIyBIaW50DQpGb3IgcGFydCBpLCByb3dTdW1zKC4pIG1heSBoZWxwIHlvdSBzZXR1cCB1cCB0aGUgbmVjZXNzYXJ5IHJhbmRvbSB2YXJpYWJsZSB0b3RhbCAob3IgeW91IGNhbiB1c2UgcGl2b3RfbG9uZ2VyKCkpDQoNCg0KIyMjIFF1ZXN0aW9uIDQuDQpGaXZlIGNoYWlycyBhcmUgcGxhY2VkIGluIGEgcm93IGluIGEgcm9vbSwgYWxvbmcgd2l0aCBmaXZlIHBlb3BsZSBvZiBkaWZmZXJpbmcgaGVpZ2h0LiBUaGUgcGVvcGxlIHNpdCBkb3duIHJhbmRvbWx5IG9uIHRoZSBjaGFpcnMuIFdoYXQgaXMgdGhlIHByb2JhYmlsaXR5IHRoYXQgdGhleSBzaXQgaW4gb3JkZXIgb2YgZGVjcmVhc2luZyBoZWlnaHQsIGxlZnQgdG8gcmlnaHQ/DQoNCiMjIyMgSGludA0KVGhpcyBpcyBhbiBhcnJhbmdlbWVudCB3aGVyZSBvcmRlciBtYXR0ZXJzLiBPZiBhbGwgdGhlIHBvc3NpYmxlIGFycmFuZ2VtZW50cywgaG93IG1hbnkgYXJlIGNvcnJlY3Q/DQoNCg0KIyMjIFF1ZXN0aW9uIDUuDQpJIHJvbGwgc2l4IGRpY2U6DQoNCiogd2hhdCBpcyB0aGUgcHJvYmFiaWxpdHkgSSBzZWUgdGhlIG51bWJlcnMgNiwgNSwgNCwgMywgMiBhbmQgMSBpbiBvcmRlciBvbiB0aGUgZGljZSwgbGVmdCB0byByaWdodD8NCiogd2hhdCBpcyB0aGUgcHJvYmFiaWxpdHkgSSBzZWUgb25lIGVhY2ggb2YgdGhlIG51bWJlcnMgNiwgNSwgNCwgMywgMiBhbmQgMSBvbiB0aGUgZGljZSByZWdhcmRsZXNzIG9mIG9yZGVyPw0KDQojIyMjIEhpbnQNCkhhdmUgYSBsb29rIGF0IHRoZSBpc2luKCkgZnVuY3Rpb24gaW4gdGhlIHByb2IgcGFja2FnZS4gRm9yIGV4YW1wbGUsIHRvIGZpbHRlciBhbGwgcm93cyBjb250YWluaW5nIDYsIDEsIDIgaW4gdGhhdCBvcmRlciwgeW91IGNvdWxkIHVzZSBpc2luKC4sIGMoNiwgMSwgMiksIG9yZGVyZWQgPSBUUlVFKQ0KDQoNCg0KIyMjIFF1ZXN0aW9uIDYuDQpJZiBJIGRyYXcgYSBzaW5nbGUgY2FyZCBmcm9tIGEgNTItY2FyZCBkZWNrLCBhbmQgaXQgaXMgYmxhY2ssIHdoYXQgaXMgdGhlIHByb2JhYmlsaXR5IHRoYXQgaXRzIHN1aXQgaXMgc3BhZGVzPw0KDQojIyMjIEhpbnQNCiogSW52ZXN0aWdhdGUgdGhlIGNhcmRzKCkgZnVuY3Rpb24gaW4gdGhlIHByb2IgcGFja2FnZSwgaWYgeW914oCZZCBsaWtlIHRvIHRyeSB0aGlzIGluIFIgKG1ha2UgYSBkZWNrIHdpdGhvdXQgam9rZXJzKS4NCiogWW91IGNvdWxkIHRoaW5rIGFib3V0IGFkZGluZyB5b3VyIG93biBibGFja19jYXJkIHJhbmRvbSB2YXJpYWJsZSB0byB0aGUgc2FtcGxlIHNwYWNlLCB3aGljaCB3b3VsZCBiZSBUUlVFIGlmIHRoZSBzdWl0IGlzIOKAmFNwYWRl4oCZIG9yIOKAmENsdWLigJksIGFuZCBGQUxTRSBvdGhlcndpc2UuKQ0KDQoNCg0K</div>
 
 
 
