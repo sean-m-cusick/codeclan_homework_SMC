@@ -146,6 +146,13 @@ For part i, rowSums(.) may help you setup up the necessary random variable total
 ### Question 4.
 Five chairs are placed in a row in a room, along with five people of differing height. The people sit down randomly on the chairs. What is the probability that they sit in order of decreasing height, left to right?
 
+A:
+
+```{r}
+
+```
+
+
 #### Hint
 This is an arrangement where order matters. Of all the possible arrangements, how many are correct?
 
@@ -164,9 +171,21 @@ Have a look at the isin() function in the prob package. For example, to filter a
 ### Question 6.
 If I draw a single card from a 52-card deck, and it is black, what is the probability that its suit is spades?
 
+A:
+
 #### Hint
 * Investigate the cards() function in the prob package, if you’d like to try this in R (make a deck without jokers).
 * You could think about adding your own black_card random variable to the sample space, which would be TRUE if the suit is ‘Spade’ or ‘Club’, and FALSE otherwise.)
 
+```{r}
+card_deck_52 <- cards(jokers = FALSE) %>% 
+  mutate(row = row_number(),
+         .before = rank)
+
+card_deck_52
+
+black_suit <- card_deck_52 %>% 
+  dplyr::filter(X1 + X2 + X3 + X4 == 5:7)
+```
 
 
