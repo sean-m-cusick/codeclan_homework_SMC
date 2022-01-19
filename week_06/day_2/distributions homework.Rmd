@@ -1,0 +1,178 @@
+---
+title: "distributions homework"
+output: html_notebook
+---
+
+# Distributions homework
+You are given a cut of a database containing details of mobile phones and their customer reviews on an online shopping site in file 20190928-items.csv. Each row in the data corresponds to one model of mobile phone. Use the data to answer the following questions.
+
+As part of the MVP we want you not to just run the code but also have a go at intepreting the results - this is the main learning objective from this homework. Don’t worry if you aren’t sure, it’s ok to get it wrong, but give it a go, through trying we will learn.
+
+#1. MVP
+```{r}
+library(prob)
+library(tidyverse)
+library(dplyr)
+library(janitor)
+library(skimr)
+library(MASS)
+library(car)
+```
+
+
+
+### Question 1.
+Load the data, clean_names() and explore it.
+```{r}
+mobile_reviews <- clean_names(read_csv("data/20190928-items.csv"))
+
+skim(mobile_reviews)
+```
+
+
+### Question 2.
+Find the brand with the highest numbers of phones in the dataset.
+```{r}
+mobile_reviews %>%
+  count(brand, sort = TRUE)
+
+  # group_by(brand) %>%
+  # mutate(count = summarise(n = n())) %>% 
+  # # mutate(freq = n/sum(n))
+  # ggplot(aes(x = brand, y = n, fill = brand)) +
+  # geom_bar()
+
+
+```
+
+
+### Question 3.
+For your top brand, plot the distribution of phone ratings as a probability density, overlaying a fitted normal distribution. Do you think the normal distribution provides a good model of these ratings?
+###Hint
+You will need to calculate the mean() and sd() of the ratings to plot the appropriate normal distribution. Alternatively, investigate using the fitdistr() function in the MASS package]
+```{r}
+samnsung_reviews <- mobile_reviews %>% 
+  dplyr::filter(brand == "Samsung") %>% 
+  summarise(
+    num = n(),
+    mean = mean(rating),
+    sd = sd(rating)
+  )
+samnsung_reviews
+```
+```{r}
+mobile_reviews %>% 
+  filter(brand == "Samsung") %>%
+  ggplot(aes(x = rating)) +
+  geom_histogram(aes(y = ..density..), col = "white", bins = 25) +
+  stat_function(
+    fun = dnorm, 
+    args = list(
+      mean = samnsung_reviews$mean, 
+      sd = samnsung_reviews$sd
+    ),
+    col = "red"
+  )
+```
+
+
+
+### Question 4.
+We can be more quantitative in comparing the distribution of top brand ratings with a normal distribution. You calculated the `mean()` and `sd()` of your distribution in an earlier question. Use these values to calculate the proportions of ratings within one-, two- and three standard deviations of the mean. Compare these proportions with those you expect for a normal distribution.
+
+```{r}
+standard_normal <- tibble(
+  z = seq(from = -4, to = 4, by = 0.01),
+  f_z = dnorm(x = z)
+)
+
+standard_normal %>%
+  ggplot(aes(x = z, y = f_z)) +
+  geom_line()
+```
+```{r}
+shade_standard_normal <- function(shade_from, shade_to){
+  standard_normal <- tibble(
+    z = seq(from = -4, to = 4, by = 0.001),
+    f_z = dnorm(x = z)
+  )
+  standard_normal %>%
+    ggplot(aes(x = z, y = f_z)) +
+    geom_line() +
+    geom_ribbon(aes(ymin = 0, ymax = ifelse(z >= shade_from & z <= shade_to, f_z, 0)), fill = "red", alpha = 0.6)
+}
+
+shade_standard_normal(shade_from = -Inf, shade_to = 0)
+
+```
+```{r}
+samnsung_reviews %>%
+  filter(rating >= samsung_stats$mean - samsung_stats$sd) %>%
+  filter(rating <= samsung_stats$mean + samsung_stats$sd) %>%
+  summarise(prop_within_1sd = n() / nrow(samsung_ratings))
+```
+
+
+### Hint
+You can use a `filter()` to get only the ratings within one-, two- and three standard deviations of the mean, and then think about how to calculate what proportion each of these filtered sets make of the total number of ratings. You’ll need to use three separate filter() and summarise() pipes to do this.
+### Further hint - code to filter within one SD
+Here’s the code to filter and summarise the proportion of ratings within one standard deviation of the mean.
+```{r}
+samsung_ratings %>%
+  filter(rating >= samsung_stats$mean - samsung_stats$sd) %>%
+  filter(rating <= samsung_stats$mean + samsung_stats$sd) %>%
+  summarise(prop_within_1sd = n() / nrow(samsung_ratings))
+```
+
+
+#2 Extension
+Investigate the use of the `qqnorm()` plot in R to determine whether data is normally distributed. What is a ‘quantile-quantile plot’? What do we expect to see in a `qqnorm()` plot if data is nearly normally distributed?
+
+Here are a few resources:
+
+* Understanding QQ plots
+* Short video tutorial (the presenter doesn’t use RStudio, but the commands are the same. Just ignore the final comments on hypothesis tests for now.)
+* Longer video tutorial
+* Quantile-Quantile plots - R Base Graphs
+
+
+```{r}
+qnorm(seq(0.01,0.99,0.01))
+```
+
+```{r}
+quantile(rnorm(200),probs = seq(0.01,0.99,0.01))
+```
+
+```{r}
+qqnorm(mobile_reviews$rating)
+```
+
+```{r}
+y <- qunif(ppoints(length(randu$x)))
+qqplot(randu$x,y)
+```
+```{r}
+qqplot(qnorm(ppoints(30)), qchisq(ppoints(30),df=3))
+```
+Notice the points form a curve instead of a straight line. Normal Q-Q plots that look like this usually mean your sample data are skewed.
+
+```{r}
+qqplot(qnorm(ppoints(30)), qcauchy(ppoints(30)))
+```
+
+
+```{r}
+my_data <- ToothGrowth
+```
+
+
+```{r}
+qqnorm(my_data$len, pch =1, frame = FALSE)
+qqline(my_data$len, col = "steelblue", lwd = 2)
+```
+
+```{r}
+
+```
+

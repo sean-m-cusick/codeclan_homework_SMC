@@ -68,8 +68,25 @@ titanic_table <- titanic_table %>%
 
 titanic_table
 ```
+```{r}
+prob_crew <- titanic_data %>% 
+  summarise(prob = sum(crew == TRUE) / n())
+
+prob_crew
+```
 
 ```{r}
+prob_passenger <- titanic_data %>% 
+  summarise(prob = sum(crew == FALSE) / n())
+
+prob_passenger
+```
+
+
+```{r}
+# prob_survived_crew <- titanic_data %>% 
+#   filter(survived == TRUE, crew == TRUE) %>% summarise(prob = n() / nrow(titanic_data))
+   
 prob_survived_crew <- titanic_data %>% 
   filter(survived == TRUE, crew == TRUE) %>% summarise(prob = n() / nrow(titanic_data))
 
@@ -126,11 +143,12 @@ A: the same set of dice are used and rolled in the same manner
 
 ```{r}
 four_dice <- rolldie(4) %>% 
-  mutate(row = row_number(),
-         .before = X1)
+  mutate(total = rowSums(.),
+         .after = X4)
+
 
 total_5_to_7 <- four_dice %>% 
-  dplyr::filter(X1 + X2 + X3 + X4 == 5:7)
+  dplyr::filter(total %in% c(5, 6, 7))
 
 nrow(total_5_to_7)
 
@@ -161,7 +179,15 @@ This is an arrangement where order matters. Of all the possible arrangements, ho
 I roll six dice:
 
 * what is the probability I see the numbers 6, 5, 4, 3, 2 and 1 in order on the dice, left to right?
+A:
+
 * what is the probability I see one each of the numbers 6, 5, 4, 3, 2 and 1 on the dice regardless of order?
+A:
+
+```{r}
+
+```
+
 
 #### Hint
 Have a look at the isin() function in the prob package. For example, to filter all rows containing 6, 1, 2 in that order, you could use isin(., c(6, 1, 2), ordered = TRUE)
@@ -182,10 +208,13 @@ card_deck_52 <- cards(jokers = FALSE) %>%
   mutate(row = row_number(),
          .before = rank)
 
-card_deck_52
 
-black_suit <- card_deck_52 %>% 
-  dplyr::filter(X1 + X2 + X3 + X4 == 5:7)
+
+card_deck_52 <- card_deck_52 %>% 
+  mutate(
+    blac_suit = (suit == "Club" | suit =="Spade"))
+
+card_deck_52
 ```
 
 
