@@ -1,0 +1,121 @@
+---
+title: "Homework - CIs"
+output: html_notebook
+---
+
+# 1 MVP
+Now we’ll go back to CI creation in the normal fashion. We’ll take the ames data from the CIs lab earlier today and regard it now as a sample, we won’t be drawing any smaller samples from within it. This is the usual situation in an analysis: you use all the data available to you!
+
+```{r libraries}
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(infer)
+```
+
+
+### Task 1.
+Load the data again, clean_names(), and re-familiarise yourself with it
+```{r load data}
+ames <- clean_names(read_csv("data/ames.csv"))
+
+
+skim(ames)
+```
+
+
+
+### Task 2.
+Investigate the distribution of lot_area. Is the distribution roughly normal? If not, what problems do you find?
+* a massive outlier. 
+```{r}
+ames %>%
+  summarise(range_lot_area = range(lot_area))
+```
+
+
+```{r}
+ames %>% 
+  ggplot(aes(x = lot_area)) +
+  geom_histogram(col = "white", bins = 25)
+
+```
+
+
+
+### Task 3.
+Compute and visualise a bootstrap sampling distribution for the mean(lot_area) of the sold houses.
+```{r sample}
+# point estimate
+sample_200 <- ames %>%
+  rep_sample_n(size = 200, reps = 1)
+
+summary_sample_200 <- sample_200 %>%
+  ungroup() %>%
+  summarise(
+    mean_lot_area = mean(lot_area)
+  ) 
+summary_sample_200
+
+# population parameter
+summary_popn <- ames %>%
+  summarise(
+    popn_mean_lot_area = mean(lot_area)
+  ) 
+summary_popn
+```
+
+```{r bootstrapping}
+bootstrap_resample_200 <- sample_200 %>%
+  rep_sample_n(size = 200, replace = TRUE, reps = 5000) %>%
+  summarise(
+    mean_lot_area = mean(lot_area)
+  )
+```
+
+```{r boostrap visual}
+bootstrap_resample_200 %>%
+  ggplot(aes(x = mean_lot_area)) +
+  geom_histogram(aes(y = ..density..), col = "white", fill = "steel blue", alpha = 0.7) +
+  labs(x = "mean area_lot from each sample") +
+    stat_function(
+    fun = dnorm, 
+    args = list(
+      mean = mean(bootstrap_resample_200$mean_lot_area), 
+      sd = sd(bootstrap_resample_200$mean_lot_area)
+    ),
+    col = "red"
+  )
+```
+
+
+
+### Task 4.
+Use your bootstrap distribution to calculate a 95% CI for mean(lot_area), and visualise it on the distribution
+```{r 95% ci}
+ci_95 <- bootstrap_resample_200 %>%
+  summarise(
+    mean = mean(mean_lot_area),
+    lower_bound = quantile(mean_lot_area, probs = 0.025),
+    upper_bound = quantile(mean_lot_area, probs = 0.975)
+  )
+
+ci_95
+```
+
+
+
+
+### Task 5.
+You would like to know the mean(lot_area) of the sold houses with higher confidence. Calculate the 99% CI for this variable (you can re-use your bootstrap distribution from above). Is it narrower or broader than the 95% CI? Does that make sense?
+
+
+
+### Task 6.
+Calculate the point estimate of the mean(lot_area)
+
+# 2 Extension
+
+
+### Task 1.
+Calculate a point estimate and 95% CI for the proportion of houses in the data built before 1920. Does the number of reps you use matter? [Investigate reps from 200 up to 50000, memory of your laptop permitting].
