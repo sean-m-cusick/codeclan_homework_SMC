@@ -102,17 +102,63 @@ ci_95 <- bootstrap_resample_200 %>%
 
 ci_95
 ```
+```{r infer resample}
+infer_resample <- bootstrap_resample_200  %>%
+  specify(response = mean_lot_area) %>%
+  generate(reps = 5000, type = "bootstrap") %>%
+  calculate(stat = "mean")
+```
 
+```{r calc 95% ci on resample}
+infer_ci_95 <- infer_resample %>%
+  get_confidence_interval(level = 0.95, type = "percentile")
+
+infer_ci_95
+```
+```{r visual 95% ci}
+infer_resample %>%
+  visualise(bins = 30) +
+  shade_ci(endpoints = infer_ci_95)
+```
 
 
 
 ### Task 5.
 You would like to know the mean(lot_area) of the sold houses with higher confidence. Calculate the 99% CI for this variable (you can re-use your bootstrap distribution from above). Is it narrower or broader than the 95% CI? Does that make sense?
+* broader - would get narrower if the sampling size increased.
+```{r 99% ci}
+ci_99 <- bootstrap_resample_200 %>%
+  summarise(
+    mean = mean(mean_lot_area),
+    lower_bound = quantile(mean_lot_area, probs = 0.005),
+    upper_bound = quantile(mean_lot_area, probs = 0.995)
+  )
 
+ci_99
+```
+
+
+```{r calc 99% ci on resample}
+infer_ci_99 <- infer_resample %>%
+  get_confidence_interval(level = 0.995, type = "percentile")
+
+infer_ci_99
+```
+
+```{r visual 99% ci}
+infer_resample %>%
+  visualise(bins = 30) +
+  shade_ci(endpoints = infer_ci_99)
+```
 
 
 ### Task 6.
 Calculate the point estimate of the mean(lot_area)
+```{r point estimate}
+bootstrap_resample_200 %>%
+  summarise(point_est = mean(mean_lot_area))
+```
+
 
 # 2 Extension
 
