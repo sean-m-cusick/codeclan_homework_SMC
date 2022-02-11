@@ -1,0 +1,267 @@
+---
+title: "Cancer Rate in the Borders"
+author: "S. M. Cusick"
+output:
+  html_document:
+    theme: darkly
+    number_sections: true
+    toc: true
+    toc_float: true
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8, echo = TRUE)
+```
+
+```{r Libraries, include=FALSE}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(ggplot2)
+library(ggfittext)
+library(ggthemes)
+library(ggExtra)
+library(readr)
+library(here)
+library(lubridate)
+library(hrbrthemes)
+library(viridis)
+```
+
+
+```{r read csv, echo=FALSE, message=FALSE, results='hide'}
+# Function for fetching data from API ----
+
+geography_codes <- clean_names(read_csv("raw_data/geography_codes_and_labels_hb2014_01042019.csv"))
+
+# Incidence at Scotland Level - 3400 records
+scotland_cancer_incidence <- clean_names(read_csv("../day_4_interview/raw_data/scotland_cancer_incidence.csv"))
+
+
+# Incidence by Health Board - 47,600 records
+hb_cancer_incidence <- clean_names(read_csv("../day_4_interview/raw_data/hb_cancer_incidence.csv"))
+
+
+# 5 year summary Incidence by Health Board - 1632 records
+summary_cancer_incidence  <- clean_names(read_csv("../day_4_interview/raw_data/summary_cancer_incidence.csv"))
+```
+
+
+```{r, include=FALSE}
+hb_names <- geography_codes %>% 
+  select(hb, hb_name)
+
+hb_cancer_incidence <-
+  left_join(hb_cancer_incidence,
+            hb_names,
+            by = "hb") %>% 
+  mutate(year = years(year),
+         .before = year) %>% 
+  mutate(year = year(year),
+         .before = year)
+```
+
+
+```{r filter borders, echo=FALSE, message=FALSE, results='hide'}
+borders_cancer_incidence <- hb_cancer_incidence %>% filter(hb == "S08000016")
+```
+
+
+```{r cancer types, include=FALSE}
+borders_cancer_incidence %>% 
+  distinct(cancer_site)
+# 52 cancer types# 
+
+border_annual_total <- borders_cancer_incidence %>% 
+  filter(cancer_site == "All cancer types")
+
+border_annual_total
+```
+
+```{r, include=FALSE}
+scotland_annual_total <- hb_cancer_incidence %>% 
+  filter(cancer_site == "All cancer types")
+
+scotland_annual_total
+```
+
+
+# Introduction
+The following presentation explores the **incidence of cancer** within the **NHS Borders** health board. 
+
+This presentation was prepared to **inform** NHS Borders on their **historic provision of cancer treatment services**, in order to create a foundation to be used in further studies and future recommendations into increasing the efficiency of cancer treatment services.
+
+# Visualisations {.tabset}
+
+## Most Common Cancers
+
+The following bar graph looks at the most common cancer types, separated by sex, within NHS Borders as well as how they compare to the most common cancer types throughout Scotland.
+
+```{r Top 5 Cancers Borders, include=FALSE}
+top_5_cancers_borders <- borders_cancer_incidence %>%
+  filter(sex == "All") %>% 
+  filter(cancer_site != "All cancer types") %>% 
+  group_by(cancer_site) %>% 
+  summarise(
+    total_cases = sum(incidences_all_ages)
+    ) %>% 
+  top_n(n = 5) %>% 
+  pull(cancer_site)
+
+```
+
+
+```{r Top 5 Cancers, include=FALSE}
+top_5_cancers <- scotland_cancer_incidence %>%
+  filter(sex == "All") %>% 
+  filter(cancer_site != "All cancer types") %>% 
+  group_by(cancer_site) %>% 
+  summarise(
+    total_cases = sum(incidences_all_ages)
+    ) %>% 
+  top_n(n = 5) %>% 
+  pull(cancer_site)
+
+
+```
+
+```{r dataframes by sex, include=FALSE}
+borders_cancer_incidence_sex <- borders_cancer_incidence %>% 
+  filter(sex != "All") %>% 
+  filter(cancer_site %in% top_5_cancers_borders) %>% 
+  group_by(cancer_site, sex) %>% 
+  summarise(
+    total_cases = sum(incidences_all_ages)
+    ) %>% 
+  ungroup %>% 
+  mutate(cancer_site = fct_reorder(cancer_site, total_cases))
+
+scotland_cancer_incidence_sex <- scotland_cancer_incidence %>% 
+  filter(sex != "All") %>% 
+  filter(cancer_site %in% top_5_cancers) %>% 
+  group_by(cancer_site, sex) %>% 
+  summarise(
+    total_cases = sum(incidences_all_ages)
+    ) %>% 
+  ungroup %>% 
+  mutate(cancer_site = fct_reorder(cancer_site, total_cases))
+
+```
+
+```{r Graphs by Sex, echo=FALSE, message=FALSE}
+ ggplot() +
+  geom_col(data = borders_cancer_incidence_sex, aes(x = cancer_site, y = total_cases, fill = sex)) +
+  theme_dark() +
+  coord_flip() +
+  geom_bar_text(position = "stack", 
+                outside = TRUE,
+                min.size = 2,
+                reflow = TRUE) +
+  labs(
+    title = "Top 5 Cancers: NHS Border",
+    y = "Cases",
+    x = ""
+  )
+
+
+ ggplot() +
+  geom_col(data = scotland_cancer_incidence_sex, aes(x = cancer_site, y = total_cases)) +
+    geom_bar_text(position = "stack", 
+                outside = TRUE,
+                min.size = 2,
+                reflow = TRUE) +
+  geom_col(data = borders_cancer_incidence_sex, aes(x = cancer_site, y = total_cases, fill = sex)) +
+  theme_dark() +
+  coord_flip() +
+  geom_bar_text(position = "stack", 
+                outside = TRUE,
+                min.size = 2,
+                reflow = TRUE) +
+  labs(
+    title = "Top 5 Cancers:NHS Borders vs NHS Scotland",
+    y = "Cases",
+    x = ""
+  )
+```
+
+
+## Borders from 1995
+There has been a continuous growth in the number of cases within the NHS Borders health board, and has been increasing substantially in recent years.
+```{r, echo=FALSE, message=FALSE}
+border_annual_total %>% 
+  filter(sex == "All") %>% 
+  ggplot() +
+  geom_point(aes(x = incidences_all_ages,
+                 y = year,
+                 size = incidences_all_ages,
+                 color = incidences_all_ages),
+             show.legend = FALSE) +
+  theme_dark() +
+  coord_flip() +
+  labs(
+    title = "Total cancer cases in Borders from 1995",
+    y = "Year",
+    x = "Cancer Cases"
+    )
+
+```
+
+Historically, there has been a higher percentage of female to male cancer patients, although this gap has closed or went over in the past few years.
+```{r, echo=FALSE, message=FALSE}
+border_annual_total %>% 
+  filter(sex != "All") %>% 
+  ggplot() +
+  geom_point(aes(x = incidences_all_ages,
+                 y = year,
+                 size = incidences_all_ages,
+                 color = sex, fill = sex),
+               show.legend = FALSE,
+               alpha= 0.5,
+               shape=21) +
+  theme_dark() +
+  coord_flip() +
+  labs(
+    title = "Total cancer cases in Borders from 1995",
+    y = "Year",
+    x = "Cancer Cases"
+    )
+
+```
+
+
+## Borders in 2019
+The graph below show the distribution of cancer incidences, with male in Yellow and female in Black. Most notable is the large amount, and large difference between sexes for **non-melona skin cancer**. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+borders_cancer_incidence_2019 <- borders_cancer_incidence %>% 
+  filter(cancer_site != "All cancer types") %>% 
+  filter(sex != "All") %>%
+  filter(year == 2019) %>%
+  dplyr::select(-year)
+  
+borders_cancer_incidence_2019 %>% 
+  arrange(desc(incidences_all_ages)) %>% 
+  mutate(cancer_site = factor(cancer_site)) %>% 
+  ggplot(aes(x = cancer_site,
+                 y = incidences_all_ages,
+                 size = incidences_all_ages,
+                 fill = sex, color = cancer_site)) +
+  geom_point(alpha=0.5, shape=21, color="black") +
+  scale_size(range = c(.1, 24),
+             name="Cases") +
+    scale_fill_viridis(discrete=TRUE,
+                       guide=FALSE,
+                       option="A") +
+    coord_flip() +
+    theme_ipsum() +
+    theme(legend.position="bottom") +
+    ylab("Number of Cases") +
+    xlab("Type of Cancer") +
+    theme(legend.position = "none")
+
+```
+
+
