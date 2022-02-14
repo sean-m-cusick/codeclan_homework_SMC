@@ -1,0 +1,74 @@
+---
+title: "w_10_day_1_linear_hw"
+author: "Seàn M. Cusick"
+date: "14/02/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r libraries}
+library(tidyverse)
+library(janitor)
+library(GGally)
+library(modelr)
+library(broom)
+library(ggfortify)
+```
+
+```{r data}
+project_management <- clean_names(read_csv("data/project_management.csv"))
+```
+```{r plot}
+project_management %>%
+  ggplot(aes(x = estimated_length, y = actual_length)) +
+  geom_point()
+```
+
+```{r correlation coefficient}
+project_management %>%
+  summarise(r = cor(estimated_length, actual_length))
+```
+
+```{r simple linear regression}
+project_management_simple <- project_management %>%
+  mutate(residual = estimated_length - actual_length,
+         sq_residual = residual^2)
+project_management_simple
+```
+
+```{r}
+project_management_simple %>% 
+  summarise(sum_sq_residuals = sum(sq_residual))
+```
+```{r linear model}
+project_management_model <- lm(
+  formula = estimated_length ~ actual_length,
+  data = project_management_simple)
+
+summary(project_management_model)
+```
+Interpret the regression coefficient of estimated_length (i.e. slope, gradient) you obtain from the model. How do you interpret the r2 value reported by the model?:
+
+For every 4.5876 predicted days, the actual amount of days was 0.5292 more. 
+
+```{r}
+autoplot(project_management_model)
+```
+## Residuals vs Fitted  
+
+Drops far away from 0 - doesn't seem reliable
+
+## Normal Q-Q  
+Normally distributed
+
+## Scale-Location  
+seems reliable
+
+# Extension
+## Residuals vs Leverage
+Unsure of meaning
