@@ -1,0 +1,31 @@
+---
+title: "Weekend Homework - Model Building"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    css: ../../../styles.css
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
+```
+
+# MVP
+
+We've looked at a few different ways in which we can build models this week, including how to prepare them properly. This weekend we'll build a multiple linear regression model on a dataset which will need some preparation. The data can be found in the data folder, along with a data dictionary
+
+We want to investigate the avocado dataset, and, in particular, to model the `AveragePrice` of the avocados. Use the tools we've worked with this week in order to prepare your dataset and find appropriate predictors. Once you've built your model use the validation techniques discussed on Wednesday to evaluate it. Feel free to focus either on building an *explanatory* or a *predictive* model, or both if you are feeling energetic!
+
+As part of the MVP we want you not to just run the code but also have a go at **interpreting the results** and write your thinking in comments in your script.
+
+**Hints and tips**
+
+* `region` may lead to many dummy variables. Think carefully about whether to include this variable or not (there is no one 'right' answer to this!)
+* Think about whether each variable is *categorical* or *numerical*. If categorical, make sure that the variable is represented as a factor.
+* We will not treat this data as a time series, so `Date` will not be needed in your models, but can you extract any useful features out of `Date` before you discard it?
+* If you want to build a predictive model, consider using either `leaps` or `glmulti` to help with this.
+

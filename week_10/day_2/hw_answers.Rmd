@@ -1,0 +1,398 @@
+---
+title: "w_10_d_2_diamond"
+author: "Seàn M. Cusick"
+date: "15/02/2022"
+output:
+  rmdformats::downcute:
+    code_folding: hide
+    downcute_theme: "chaos"
+    self_contained: TRUE
+    thumbnails: FALSE
+    lightbox: TRUE
+    gallery: FALSE
+    highlight: tango
+    embed_fonts: TRUE
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r libraries, include=FALSE}
+library(prob)
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+library(ggthemes)
+library(infer)
+library(e1071)
+library(knitr)
+library(infer)
+library(viridis)
+library(GGally)
+library(testthat)
+library(assertthat)
+library(modelr)
+```
+
+# MVP {.tabset}   
+
+## Task 1 {.tabset}  
+
+Load the `diamonds.csv` data set and undertake an initial exploration of the data.
+
+```{r, include=FALSE}
+diamonds <- clean_names(read_csv("diamonds/data/diamonds.csv"))
+```
+### Variable Key 
+
+[Via Kaggle](https://www.kaggle.com/shivam2503/diamonds/)
+
+| Variable | Description |
+|:--- |:---- |
+| price | price in US dollars (\$326--\$18,823) |
+| carat | weight of the diamond (0.2--5.01) |
+| cut | quality of the cut (Fair, Good, Very Good, Premium, Ideal) |
+| color | diamond colour, from J (worst) to D (best) |
+| clarity | a measurement of how clear the diamond is (I1 (worst), SI2, SI1, VS2, VS1, VVS2, VVS1, IF (best)) |
+| x | length in mm (0--10.74) |
+| y | width in mm (0--58.9) |
+| z | depth in mm (0--31.8) |
+| depth | total depth percentage = z / mean(x, y) = 2 * z / (x + y) (43--79) |
+| table | width of top of diamond relative to widest point (43--95) |
+
+### Summary  
+No `NA`s, 
+```{r}
+summary(diamonds)
+```
+
+***  
+
+### Head
+```{r}
+head(diamonds) %>% 
+  knitr::kable()
+```
+
+
+***  
+
+### Distribution
+
+```{r}
+  ggpairs(diamonds) +
+  scale_color_viridis(discrete = TRUE,
+                      option = "D") +
+  scale_fill_viridis(discrete = TRUE)
+```
+
+
+***  
+
+## Task 2  
+We expect the `carat` of the diamonds to be strong correlated with the physical dimensions `x`, `y` and `z`. Use `ggpairs()` to investigate correlations between these four variables.
+
+```{r, include=FALSE}
+diamond_dimension_corr <- diamonds %>%
+  select(carat, x, y, z)
+
+```
+
+```{r}
+ggpairs(diamond_dimension_corr)
+```
+
+***  
+
+## Task 3  
+Let’s drop columns `x`, `y` and `z` from the dataset, in preparation to use only carat going forward.
+
+```{r}
+diamond_minus_dimension <- diamonds %>% 
+  select(-x, -y, -z)
+
+diamond_minus_dimension
+```
+
+***  
+
+## Task 4  
+We are interested in developing a regression model for the price of a diamond in terms of the possible predictor variables in the dataset.
+Use `ggpairs()` to investigate correlations between price and the predictors (this may take a while to run, don’t worry, make coffee or something).
+```{r}
+ggpairs(diamond_minus_dimension)
+```
+
+
+
+***  
+
+## Task 4 - Visualisations {.tabset}  
+Perform further ggplot visualisations of any significant correlations you find.
+
+### carat v price  
+
+```{r}
+diamond_minus_dimension %>%
+  ggplot(aes(x = carat, y = price)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+***  
+
+
+### carat v depth  
+
+```{r}
+diamond_minus_dimension %>%
+  ggplot(aes(x = carat, y = depth)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+***  
+
+### color v price  
+
+```{r}
+diamond_minus_dimension %>%
+  ggplot(aes(x = color, y = price)) +
+  geom_boxplot() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+
+
+***  
+
+### depth v table  
+
+```{r}
+diamond_minus_dimension %>%
+  ggplot(aes(x = depth, y = table)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+
+
+
+***  
+
+## Task 5 {.tabset} 
+Shortly we may try a regression fit using one or more of the categorical predictors `cut`, `clarity` and `color`, so let’s investigate these predictors. Investigate the levels of these predictors. How many dummy variables do you expect for each of them?
+
+### Dummy Cut
+
+5 Dummy variables
+```{r dummy cut}
+diamond_minus_dimension %>% 
+  distinct(cut) %>% 
+  knitr::kable()
+
+diamond_cut_dummy <- diamond_minus_dimension %>%
+  mutate(cut_ideal = ifelse(cut == "Ideal",
+                            1,
+                            0),
+         cut_prem = ifelse(cut == "Premium",
+                           1,
+                           0),
+         cut_good = ifelse(cut == "Good",
+                           1,
+                           0),
+         cut_vgood = ifelse(cut == "Very Good",
+                            1,
+                            0),
+         cut_fair = ifelse(cut == "Fair",
+                           1,
+                           0))
+
+diamond_cut_dummy <- diamond_cut_dummy %>% 
+  select(-cut)
+
+diamond_cut_dummy
+```
+
+***  
+
+
+### Dummy Clarity
+
+8 dummy variables
+
+```{r Dummy Clarity}
+diamond_minus_dimension %>% 
+  distinct(clarity) %>% 
+  knitr::kable()
+
+diamond_clarity_dummy <- diamond_minus_dimension %>%
+  mutate(clarity_si2 = ifelse(clarity == "SI2",
+                              1,
+                              0),
+         clarity_si1 = ifelse(clarity == "SI1",
+                              1,
+                              0),
+         clarity_vs1 = ifelse(clarity == "VS1",
+                              1,
+                              0),
+         clarity_vs2 = ifelse(clarity == "VS2",
+                              1,
+                              0),
+         clarity_vvs2 = ifelse(clarity == "VVS2",
+                               1,
+                               0),
+         clarity_vvs1 = ifelse(clarity == "VVS1",
+                               1,
+                               0),
+        clarity_i1 = ifelse(clarity == "I1",
+                            1,
+                            0),
+        clarity_if = ifelse(clarity == "IF",
+                            1,
+                            0))
+
+diamond_clarity_dummy <- diamond_clarity_dummy %>% 
+  select(-clarity)
+
+diamond_clarity_dummy
+```
+
+***  
+
+
+### Dummy Colour
+
+7 dummy variables
+```{r dummy Colour}
+diamond_minus_dimension %>% 
+  distinct(color) %>% 
+  knitr::kable()
+
+diamond_color_dummy <- diamond_minus_dimension %>%
+  mutate(color_e = ifelse(color == "E",
+                            1,
+                            0),
+         color_i = ifelse(color == "I",
+                           1,
+                           0),
+         color_j = ifelse(color == "J",
+                           1,
+                           0),
+         color_h = ifelse(color == "H",
+                            1,
+                            0),
+         color_f = ifelse(color == "F",
+                            1,
+                            0),
+         color_g = ifelse(color == "G",
+                            1,
+                            0),
+         color_d = ifelse(color == "D",
+                           1,
+                           0))
+
+diamond_color_dummy <- diamond_color_dummy %>% 
+  select(-color)
+
+diamond_color_dummy
+```
+
+***  
+
+## Task 6  
+Start with simple linear regression. Regress price on carat and check the regression diagnostics.
+
+
+```{r line function, include=FALSE}
+line <- function(x, b0, b1){
+  return(b0 + x * b1)
+}
+```
+
+```{r}
+price_carat <- diamond_minus_dimension %>% 
+  select(price, carat) %>% 
+  mutate(fit_height = line(price,
+                           b0 = 95,
+                           b1 = 1))
+```
+
+
+
+
+```{r}
+price_carat %>% 
+  ggplot(aes(x = price,
+            y = carat)) +
+  geom_point() +
+  geom_point(aes(y = fit_height),
+             shape = 1) +
+  geom_abline(slope = 1,
+              intercept = 95,
+              col = "red")
+# +
+#   geom_segment(aes(xend = price,
+#                    yend = fit_height),
+#                alpha = 0.5)
+
+```
+
+```{r}
+price_carat <- price_carat %>% 
+  mutate(residual = carat - fit_height,
+         sq_residual = residual^2)
+
+price_carat
+
+price_carat %>%
+  summarise(sum_sq_residuals = sum(sq_residual))
+```
+
+```{r}
+price_carat_model <- lm(formula = price ~ carat, data = price_carat)
+```
+
+
+```{r}
+
+price_carat <- price_carat %>% 
+  select(-c(fit_height,
+            residual,
+            sq_residual)) %>% 
+  add_predictions(price_carat_model) %>% 
+  add_residuals(price_carat_model)
+
+price_carat
+  
+```
+
+```{r}
+price_carat %>%
+  ggplot(aes(x = price)) +
+  geom_point(aes(y = carat)) +
+  geom_line(aes(y = pred), col = "red")
+```
+
+
+***  
+
+## Task 7  
+Add another predictor of your choice. Check your assumptions, diagnostics, and interpret the model.
+
+***  
+
+***  
+
+# Extension
+
+## Task 8  
+Try adding an interaction between log(carat) and your chosen categorical predictor. Do you think this interaction term is statistically justified?
+
+***  
+
+## Task 9  
+Find and plot an appropriate visualisation to show the effect of this interaction
