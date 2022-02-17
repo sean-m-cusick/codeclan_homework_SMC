@@ -25,6 +25,7 @@ library(prob)
 library(tidyverse)
 library(janitor)
 library(ggplot2)
+library(GGally)
 library(ggthemes)
 library(infer)
 library(e1071)
@@ -67,6 +68,8 @@ diamonds <- clean_names(read_csv("diamonds/data/diamonds.csv"))
 No `NA`s, 
 ```{r}
 summary(diamonds)
+
+glimpse(diamonds)
 ```
 
 ***  
@@ -187,8 +190,7 @@ diamond_minus_dimension %>%
 Shortly we may try a regression fit using one or more of the categorical predictors `cut`, `clarity` and `color`, so let’s investigate these predictors. Investigate the levels of these predictors. How many dummy variables do you expect for each of them?
 
 ### Dummy Cut
-
-5 Dummy variables
+4 Dummy variables
 ```{r dummy cut}
 diamond_minus_dimension %>% 
   distinct(cut) %>% 
@@ -222,7 +224,7 @@ diamond_cut_dummy
 
 ### Dummy Clarity
 
-8 dummy variables
+7 dummy variables
 
 ```{r Dummy Clarity}
 diamond_minus_dimension %>% 
@@ -266,7 +268,7 @@ diamond_clarity_dummy
 
 ### Dummy Colour
 
-7 dummy variables
+6 dummy variables
 ```{r dummy Colour}
 diamond_minus_dimension %>% 
   distinct(color) %>% 
@@ -305,6 +307,14 @@ diamond_color_dummy
 
 ## Task 6  
 Start with simple linear regression. Regress price on carat and check the regression diagnostics.
+
+```{r}
+mod1 <- lm(price ~ carat, data = diamond_minus_dimension)
+par(mfrow = c(2,2))
+
+plot(mod1)
+```
+
 
 
 ```{r line function, include=FALSE}
@@ -382,6 +392,12 @@ price_carat %>%
 
 ## Task 7  
 Add another predictor of your choice. Check your assumptions, diagnostics, and interpret the model.
+
+```{r}
+mod2_clarity <- lm(price ~ carat + clarity, data = diamond_minus_dimension)
+summary(mod2_clarity)
+```
+
 
 ***  
 
